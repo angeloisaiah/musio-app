@@ -1,0 +1,2 @@
+﻿#!/usr/bin/env bash
+echo "QNEW: Read and apply BEST PRACTICES (CLAUDE.md) before coding."

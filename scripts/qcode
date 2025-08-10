@@ -1,0 +1,5 @@
+﻿#!/usr/bin/env bash
+echo "QCODE: Run tests, prettier, turbo typecheck lint. Fail on violations."
+pnpm -w prettier:check
+npx turbo typecheck lint
+pnpm -w test

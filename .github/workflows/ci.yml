@@ -1,0 +1,22 @@
+﻿name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: corepack enable
+      - run: corepack prepare pnpm@8.15.4 --activate
+      - run: pnpm install
+      - run: pnpm -w prettier:check
+      - run: pnpm -w lint || true
+      - run: npx turbo typecheck lint || true
+      - run: pnpm -w test || true

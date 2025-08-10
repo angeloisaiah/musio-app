@@ -1,0 +1,6 @@
+﻿#!/usr/bin/env bash
+echo "QCHECK:"
+echo "- Writing Functions Best Practices"
+echo "- Writing Tests Best Practices"
+echo "- Implementation Best Practices"
+echo "Ensure commit messages follow Conventional Commits."

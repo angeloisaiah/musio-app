@@ -1,0 +1,16 @@
+﻿{
+  "name": "musio-dev",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "features": {},
+  "postCreateCommand": "corepack enable && corepack prepare pnpm@8.15.4 --activate && pnpm install",
+  "customizations": {
+    "vscode": {
+      "settings": { "terminal.integrated.defaultProfile.windows": "PowerShell" },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}
