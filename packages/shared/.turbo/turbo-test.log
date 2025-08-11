@@ -1,0 +1,7 @@
+
+> @musio/shared@0.0.0 test C:\Users\changeme\Documents\samplette-inspired-app\musio.app\packages\shared
+> vitest run -c vitest.config.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/changeme/Documents/samplette-inspired-app/musio.app/packages/shared[39m
+

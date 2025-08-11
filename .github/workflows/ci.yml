@@ -18,5 +18,5 @@ jobs:
       - run: pnpm install
       - run: pnpm -w prettier:check
       - run: pnpm -w lint || true
-      - run: npx turbo typecheck lint || true
+      - run: npx turbo run typecheck lint || true
       - run: pnpm -w test || true

@@ -1,0 +1,4 @@
+
+> @musio/shared@0.0.0 typecheck C:\Users\changeme\Documents\samplette-inspired-app\musio.app\packages\shared
+> tsc -p tsconfig.json --noEmit
+
