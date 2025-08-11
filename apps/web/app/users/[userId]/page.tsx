@@ -5,7 +5,7 @@ import { FollowButton } from '../../components/FollowButton';
 interface UserProfile {
   user: {
     id: string;
-    name: string | null;
+    username: string;
     bio: string | null;
     avatar_url: string | null;
     created_at: string;
@@ -21,16 +21,26 @@ interface UserPost {
   id: string;
   title: string;
   caption: string | null;
-  preview_url: string | null;
-  waveform_url: string | null;
+  media_files?: MediaFile[];
   duration_ms: number | null;
   created_at: string;
-  counts: {
+  _count: {
     likes: number;
     comments: number;
-    reposts: number;
-    plays: number;
+    shares: number;
   };
+}
+
+interface MediaFile {
+  id: string;
+  post_id: string;
+  url: string;
+  type: 'original' | 'preview' | 'cover' | 'video' | 'waveform_json';
+  mime: string;
+  size?: number;
+  duration_ms?: number;
+  width?: number;
+  height?: number;
 }
 
 async function fetchUserProfile(userId: string): Promise<UserProfile> {
@@ -49,7 +59,7 @@ async function fetchUserProfile(userId: string): Promise<UserProfile> {
 
 async function fetchUserPosts(
   userId: string,
-): Promise<{ items: UserPost[]; nextCursor: string | null }> {
+): Promise<{ data: UserPost[]; pagination: { nextCursor?: string } }> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const res = await fetch(`${apiUrl}/api/users/${userId}/posts?limit=10`, {
     next: { revalidate: 30 }, // Revalidate every 30 seconds
@@ -65,7 +75,7 @@ async function fetchUserPosts(
 
 export default async function UserProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   let profile: UserProfile;
-  let posts: { items: UserPost[]; nextCursor: string | null };
+  let posts: { data: UserPost[]; pagination: { nextCursor?: string } };
 
   try {
     const { userId } = await params;
@@ -107,7 +117,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
             {profile.user.avatar_url ? (
               <img
                 src={profile.user.avatar_url}
-                alt={profile.user.name || 'User avatar'}
+                alt={profile.user.username || 'User avatar'}
                 className="w-20 h-20 rounded-full object-cover"
               />
             ) : (
@@ -120,7 +130,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           {/* User Info */}
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-neutral-100 mb-1">
-              {profile.user.name || 'Anonymous User'}
+              {profile.user.username || 'Anonymous User'}
             </h1>
 
             <p className="text-neutral-400 text-sm mb-3">Joined {joinedDate}</p>
@@ -171,13 +181,13 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           Posts ({profile.stats.postsCount})
         </h2>
 
-        {posts.items.length === 0 ? (
+        {posts.data.length === 0 ? (
           <div className="bg-neutral-900 rounded-lg p-8 text-center">
             <p className="text-neutral-400">No posts yet.</p>
           </div>
         ) : (
           <ul className="space-y-4">
-            {posts.items.map((post) => (
+            {posts.data.map((post) => (
               <li key={post.id} className="bg-neutral-900 rounded-lg p-4">
                 <div className="mb-3">
                   <h3 className="font-medium text-neutral-100">{post.title}</h3>
@@ -188,8 +198,8 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                 </div>
 
                 <AudioPlayer
-                  previewUrl={post.preview_url}
-                  waveformUrl={post.waveform_url}
+                  previewUrl={post.media_files?.find(f => f.type === 'preview')?.url || null}
+                  waveformUrl={post.media_files?.find(f => f.type === 'waveform_json')?.url || null}
                   duration={post.duration_ms}
                   title={post.title}
                   onPlay={() => console.log('Playing:', post.id)}
@@ -198,17 +208,16 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
                 {/* Post Stats */}
                 <div className="flex gap-4 mt-3 text-sm text-neutral-400">
-                  <span>{post.counts.likes} likes</span>
-                  <span>{post.counts.comments} comments</span>
-                  <span>{post.counts.reposts} reposts</span>
-                  <span>{post.counts.plays} plays</span>
+                  <span>{post._count.likes} likes</span>
+                  <span>{post._count.comments} comments</span>
+                  <span>{post._count.shares} shares</span>
                 </div>
               </li>
             ))}
           </ul>
         )}
 
-        {posts.nextCursor && (
+        {posts.pagination.nextCursor && (
           <div className="mt-6 text-center">
             <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
               Load More Posts

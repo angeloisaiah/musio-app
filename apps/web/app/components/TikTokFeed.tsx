@@ -7,7 +7,7 @@ import { apiClient } from '../lib/api-client';
 import { TikTokFeedItem } from './TikTokFeedItem';
 import { LoadingSpinner } from './LoadingSpinner';
 import { ErrorBoundary } from './ErrorBoundary';
-import type { PostWithCounts } from '@musio/shared';
+import type { PostWithCounts } from '../types/shared';
 
 interface TikTokFeedProps {
   initialPosts?: PostWithCounts[];
@@ -70,11 +70,11 @@ export function TikTokFeed({ initialPosts = [] }: TikTokFeedProps) {
       setPosts(prevPosts => {
         // Avoid duplicates by checking IDs
         const existingIds = new Set(prevPosts.map(p => p.id));
-        const newPosts = data.items.filter((post: PostWithCounts) => !existingIds.has(post.id));
+        const newPosts = data.data.filter((post: PostWithCounts) => !existingIds.has(post.id));
         return [...prevPosts, ...newPosts];
       });
       
-      setNextCursor(data.nextCursor);
+      setNextCursor(data.pagination.nextCursor || null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch more posts';
       setError(errorMessage);

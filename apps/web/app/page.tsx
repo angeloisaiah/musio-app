@@ -3,7 +3,7 @@ import { AudioPlayer } from './components/AudioPlayer';
 import { FeedPost } from './components/FeedPost';
 import { NotificationBell } from './components/NotificationBell';
 import { apiClient } from './lib/api-client';
-import type { PostWithCounts, PaginatedResponse } from '@musio/shared';
+import type { PostWithCounts, PaginatedResponse } from './types/shared';
 
 async function fetchFeed(): Promise<PaginatedResponse<PostWithCounts>> {
   try {
@@ -50,7 +50,7 @@ export default async function Page() {
         </Link>
       </div>
       <ul className="space-y-4">
-        {data.items.map((post) => (
+        {data.data.map((post) => (
           <li key={post.id}>
             <FeedPost post={post} />
           </li>

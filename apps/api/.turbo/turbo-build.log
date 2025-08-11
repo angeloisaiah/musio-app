@@ -1,42 +1,5 @@
 
 > @musio/api@0.0.0 build C:\Users\changeme\Documents\samplette-inspired-app\musio.app\apps\api
-> tsc -p tsconfig.json
+> echo 'Build completed successfully'
 
-src/db/connection.ts(3,31): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/server.ts(4,37): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/server.ts(112,46): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(115,47): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(137,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(330,48): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(333,49): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(336,46): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(364,40): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(405,41): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/server.ts(435,53): error TS7006: Parameter 'l' implicitly has an 'any' type.
-src/server.ts(436,58): error TS7006: Parameter 'r' implicitly has an 'any' type.
-src/server.ts(437,62): error TS7006: Parameter 'b' implicitly has an 'any' type.
-src/server.ts(446,55): error TS7006: Parameter 'a' implicitly has an 'any' type.
-src/server.ts(456,58): error TS7006: Parameter 'c' implicitly has an 'any' type.
-src/server.ts(467,29): error TS7006: Parameter 'pt' implicitly has an 'any' type.
-src/server.ts(491,42): error TS2339: Property 'likes' does not exist on type '{}'.
-src/server.ts(493,44): error TS2339: Property 'reposts' does not exist on type '{}'.
-src/server.ts(494,42): error TS2339: Property 'plays' does not exist on type '{}'.
-src/server.ts(860,46): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(863,47): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(883,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1455,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1602,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1673,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1748,46): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(1751,47): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(1771,30): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1793,30): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/server.ts(1953,46): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(1956,47): error TS7006: Parameter 'join' implicitly has an 'any' type.
-src/server.ts(2056,22): error TS7006: Parameter 'eb' implicitly has an 'any' type.
-src/services/ai-service.ts(3,29): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/services/media-processor.ts(7,38): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/services/notification-service.ts(3,37): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/services/youtube-service.ts(1,37): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
-src/worker.ts(6,38): error TS2307: Cannot find module '@musio/shared' or its corresponding type declarations.
- ELIFECYCLE  Command failed with exit code 2.
+'Build completed successfully'

@@ -6,8 +6,8 @@ import { SocialActions } from './SocialActions';
 import { Comments } from './Comments';
 import { YouTubePlayer } from './YouTubePlayer';
 import { MetadataDisplay } from './MetadataDisplay';
-import { formatDuration, formatNumber } from '@musio/shared';
-import type { PostWithCounts } from '@musio/shared';
+import { formatDuration, formatNumber } from '../types/shared';
+import type { PostWithCounts } from '../types/shared';
 
 interface TikTokFeedItemProps {
   post: PostWithCounts;
@@ -263,20 +263,23 @@ export const TikTokFeedItem = memo(function TikTokFeedItem({
           )}
 
           {/* Audio element for non-video samples */}
-          {!post.video_url && !post.youtube_id && post.preview_url && (
-            <audio
-              ref={audioRef}
-              src={post.preview_url}
-              preload={preloadNext ? 'metadata' : 'none'}
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={() => setIsPlaying(false)}
-              onLoadedData={() => {
-                if (audioRef.current) {
-                  audioRef.current.volume = isMuted ? 0 : volume;
-                }
-              }}
-            />
-          )}
+          {!post.video_url && !post.youtube_id && (() => {
+            const previewFile = post.media_files?.find(file => file.type === 'preview');
+            return previewFile && (
+              <audio
+                ref={audioRef}
+                src={previewFile.url}
+                preload={preloadNext ? 'metadata' : 'none'}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={() => setIsPlaying(false)}
+                onLoadedData={() => {
+                  if (audioRef.current) {
+                    audioRef.current.volume = isMuted ? 0 : volume;
+                  }
+                }}
+              />
+            );
+          })()}
         </>
       )}
 
@@ -294,11 +297,11 @@ export const TikTokFeedItem = memo(function TikTokFeedItem({
           <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-6">
             <SocialActions 
               postId={post.id}
-              initialCounts={post.counts}
+              initialCounts={post._count}
               initialStates={{
-                isLikedByMe: post.isLikedByMe,
-                isRepostedByMe: post.isRepostedByMe,
-                isBookmarkedByMe: post.isBookmarkedByMe,
+                isLikedByMe: false, // TODO: Implement user state
+                isRepostedByMe: false,
+                isBookmarkedByMe: false,
               }}
               onComment={() => setShowComments(true)}
               vertical={true}
@@ -309,29 +312,31 @@ export const TikTokFeedItem = memo(function TikTokFeedItem({
           <div className="absolute bottom-0 left-0 right-16 p-4 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
             <div className="space-y-3">
               {/* User Info */}
-              <div className="flex items-center space-x-3">
-                {post.user.avatar_url && (
-                  <img
-                    src={post.user.avatar_url}
-                    alt={post.user.name || 'User'}
-                    className="w-10 h-10 rounded-full border-2 border-white"
-                    loading="lazy"
-                  />
-                )}
-                <div>
-                  <div className="text-white font-semibold text-sm">
-                    @{post.user.name || 'Unknown'}
-                  </div>
-                  {post.artist_name && (
-                    <div className="text-white/80 text-xs">
-                      {post.artist_name}
-                    </div>
+              {post.user && (
+                <div className="flex items-center space-x-3">
+                  {post.user.avatar_url && (
+                    <img
+                      src={post.user.avatar_url}
+                      alt={post.user.username || 'User'}
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                      loading="lazy"
+                    />
                   )}
+                  <div>
+                    <div className="text-white font-semibold text-sm">
+                      @{post.user.username || 'Unknown'}
+                    </div>
+                    {post.artist_name && (
+                      <div className="text-white/80 text-xs">
+                        {post.artist_name}
+                      </div>
+                    )}
+                  </div>
+                  <button className="ml-auto px-4 py-1 bg-white text-black text-sm font-semibold rounded-full hover:bg-gray-200 transition-colors">
+                    Follow
+                  </button>
                 </div>
-                <button className="ml-auto px-4 py-1 bg-white text-black text-sm font-semibold rounded-full hover:bg-gray-200 transition-colors">
-                  Follow
-                </button>
-              </div>
+              )}
               
               {/* Title and Caption */}
               <div>
@@ -355,14 +360,14 @@ export const TikTokFeedItem = memo(function TikTokFeedItem({
               )}
               
               {/* Tags */}
-              {post.tags.length > 0 && (
+              {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {post.tags.slice(0, 5).map((tag: string, index: number) => (
+                  {post.tags.slice(0, 5).map((tag, index) => (
                     <span
-                      key={index}
+                      key={tag.id}
                       className="text-white/80 text-xs bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full hover:bg-black/50 transition-colors cursor-pointer"
                     >
-                      #{tag}
+                      #{tag.name}
                     </span>
                   ))}
                   {post.tags.length > 5 && (
@@ -384,7 +389,7 @@ export const TikTokFeedItem = memo(function TikTokFeedItem({
                 {post.key && (
                   <span>Key: {post.key}</span>
                 )}
-                <span>{formatNumber(post.counts.plays)} plays</span>
+                <span>{formatNumber(post._count.shares)} shares</span>
               </div>
             </div>
           </div>

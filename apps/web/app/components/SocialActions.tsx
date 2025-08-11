@@ -7,8 +7,7 @@ interface SocialActionsProps {
   initialCounts: {
     likes: number;
     comments: number;
-    reposts: number;
-    plays: number;
+    shares: number;
   };
   initialStates?: {
     isLikedByMe?: boolean;
@@ -83,7 +82,7 @@ export function SocialActions({
 
       const data = await res.json();
       setReposted(data.reposted);
-      setCounts((prev) => ({ ...prev, reposts: data.repostsCount }));
+      setCounts((prev) => ({ ...prev, shares: data.sharesCount }));
     } catch (error) {
       console.error('Error reposting:', error);
       alert('Failed to repost');
@@ -185,7 +184,7 @@ export function SocialActions({
               />
             </svg>
           </button>
-          <span className="text-xs mt-1 font-semibold">{counts.reposts}</span>
+          <span className="text-xs mt-1 font-semibold">{counts.shares}</span>
         </div>
 
         {/* Bookmark */}
@@ -274,7 +273,7 @@ export function SocialActions({
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
           />
         </svg>
-        <span>{counts.reposts}</span>
+        <span>{counts.shares}</span>
       </button>
 
       {/* Bookmark */}
@@ -310,7 +309,7 @@ export function SocialActions({
             d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10v5a2 2 0 002 2h2a2 2 0 002-2v-5"
           />
         </svg>
-        <span>{counts.plays}</span>
+        <span>{counts.shares}</span>
       </div>
     </div>
   );

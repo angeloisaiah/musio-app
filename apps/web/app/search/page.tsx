@@ -6,25 +6,42 @@ import { AudioPlayer } from '../components/AudioPlayer';
 import { SocialActions } from '../components/SocialActions';
 import { Comments } from '../components/Comments';
 
+interface Tag {
+  id: string;
+  name: string;
+  normalized: string;
+  created_at: string;
+}
+
+interface MediaFile {
+  id: string;
+  post_id: string;
+  url: string;
+  type: 'original' | 'preview' | 'cover' | 'video' | 'waveform_json';
+  mime: string;
+  size?: number;
+  duration_ms?: number;
+  width?: number;
+  height?: number;
+}
+
 interface SearchResult {
   id: string;
   title: string;
   caption: string | null;
   user: {
     id: string;
-    name: string | null;
+    username: string;
     avatar_url: string | null;
   };
-  preview_url: string | null;
+  media_files?: MediaFile[];
   duration_ms: number | null;
-  waveform_url: string | null;
-  counts: {
+  _count: {
     likes: number;
     comments: number;
-    reposts: number;
-    plays: number;
+    shares: number;
   };
-  tags: string[];
+  tags: Tag[];
   created_at: string;
 }
 
@@ -54,7 +71,7 @@ export default function SearchPage() {
       const res = await fetch(`${apiUrl}/api/tags/popular?limit=15`);
       if (res.ok) {
         const data = await res.json();
-        setPopularTags(data.items);
+        setPopularTags(data.data);
       }
     } catch (error) {
       console.error('Error fetching popular tags:', error);
@@ -79,7 +96,7 @@ export default function SearchPage() {
       if (!res.ok) throw new Error('Search failed');
 
       const data = await res.json();
-      setResults(data.items);
+              setResults(data.data);
     } catch (error) {
       console.error('Search error:', error);
       alert('Search failed. Please try again.');
@@ -195,7 +212,7 @@ export default function SearchPage() {
                         href={`/users/${post.user.id}`}
                         className="text-sm text-neutral-400 hover:text-neutral-200 transition-colors"
                       >
-                        {post.user.name || 'Unknown User'}
+                        {post.user.username || 'Unknown User'}
                       </Link>
                       <span className="text-xs text-neutral-500">
                         {new Date(post.created_at).toLocaleDateString()}
@@ -210,11 +227,11 @@ export default function SearchPage() {
                       <div className="flex flex-wrap gap-2 mt-2">
                         {post.tags.map((tag) => (
                           <button
-                            key={tag}
-                            onClick={() => handleTagToggle(tag)}
+                            key={tag.id}
+                            onClick={() => handleTagToggle(tag.name)}
                             className="px-2 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full hover:bg-neutral-700 transition-colors"
                           >
-                            #{tag}
+                            #{tag.name}
                           </button>
                         ))}
                       </div>
@@ -223,20 +240,20 @@ export default function SearchPage() {
 
                   {/* Audio Player */}
                   <div className="mb-4">
-                    <AudioPlayer
-                      previewUrl={post.preview_url}
-                      waveformUrl={post.waveform_url}
-                      duration={post.duration_ms}
-                      title={post.title}
-                      onPlay={() => console.log('Playing:', post.id)}
-                      onPause={() => console.log('Paused:', post.id)}
-                    />
+                                      <AudioPlayer
+                    previewUrl={post.media_files?.find(f => f.type === 'preview')?.url || null}
+                    waveformUrl={post.media_files?.find(f => f.type === 'waveform_json')?.url || null}
+                    duration={post.duration_ms}
+                    title={post.title}
+                    onPlay={() => console.log('Playing:', post.id)}
+                    onPause={() => console.log('Paused:', post.id)}
+                  />
                   </div>
 
                   {/* Social Actions */}
                   <SocialActions
                     postId={post.id}
-                    initialCounts={post.counts}
+                    initialCounts={post._count}
                     onComment={() => setShowComments(post.id)}
                   />
                 </div>

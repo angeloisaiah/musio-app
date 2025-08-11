@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { FeedSample } from './VerticalFeed';
 import { SocialActions } from './SocialActions';
 import { Comments } from './Comments';
+import { useIntersectionObserver } from '../hooks/use-intersection-observer';
 
 interface FeedItemProps {
   sample: FeedSample;
@@ -19,17 +20,32 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
   const audioRef = useRef<HTMLAudioElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Helper function to get preview URL
+  const getPreviewUrl = () => {
+    return sample.media_files?.find(file => file.type === 'preview')?.url || null;
+  };
 
-  // Initialize volume from localStorage
+  // Use intersection observer to only load content when visible
+  const [elementRef, isVisible] = useIntersectionObserver<HTMLDivElement>({
+    threshold: 0.1,
+    rootMargin: '100px', // Start loading 100px before element is visible
+  });
+
+  // Initialize volume from localStorage only once
   useEffect(() => {
     const savedVolume = localStorage.getItem('musio_volume');
     const savedMuted = localStorage.getItem('musio_muted');
     
     if (savedVolume) {
       const vol = parseFloat(savedVolume);
-      setVolume(vol);
+      if (!isNaN(vol) && vol >= 0 && vol <= 1) {
+        setVolume(vol);
+      }
     }
     
     if (savedMuted) {
@@ -37,18 +53,25 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
     }
   }, []);
 
-  // Update media volume when volume or mute state changes
-  useEffect(() => {
-    const effectiveVolume = isMuted ? 0 : volume;
-    
+  // Memoized volume update function
+  const updateMediaVolume = useCallback((effectiveVolume: number) => {
     if (audioRef.current) {
       audioRef.current.volume = effectiveVolume;
     }
-    
     if (videoRef.current) {
       videoRef.current.volume = effectiveVolume;
     }
-  }, [volume, isMuted]);
+  }, []);
+
+  // Update media volume when volume or mute state changes
+  useEffect(() => {
+    const effectiveVolume = isMuted ? 0 : volume;
+    updateMediaVolume(effectiveVolume);
+    
+    // Save to localStorage
+    localStorage.setItem('musio_volume', volume.toString());
+    localStorage.setItem('musio_muted', isMuted.toString());
+  }, [volume, isMuted, updateMediaVolume]);
 
   // Handle autoplay when item becomes active
   useEffect(() => {
@@ -74,34 +97,38 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
     if (preloadNext) {
       if (sample.video_url && videoRef.current) {
         videoRef.current.load();
-      } else if (sample.preview_url && audioRef.current) {
+      } else if (getPreviewUrl() && audioRef.current) {
         audioRef.current.load();
       }
     }
-  }, [preloadNext, sample.video_url, sample.preview_url]);
+  }, [preloadNext, sample.video_url, getPreviewUrl]);
 
+  // Memoized play handler
   const handlePlay = async () => {
+    if (!isLoaded) return;
+    
     try {
       if (sample.video_url && videoRef.current) {
         await videoRef.current.play();
-        setIsPlaying(true);
-      } else if (sample.preview_url && audioRef.current) {
+      } else if (getPreviewUrl() && audioRef.current) {
         await audioRef.current.play();
-        setIsPlaying(true);
       }
+      setIsPlaying(true);
     } catch (error) {
-      console.error('Playback error:', error);
+      console.warn('Failed to play media:', error);
     }
   };
 
-  const handlePause = () => {
-    if (sample.video_url && videoRef.current) {
+  // Memoized pause handler
+  const handlePause = useCallback(() => {
+    if (videoRef.current) {
       videoRef.current.pause();
-    } else if (sample.preview_url && audioRef.current) {
+    }
+    if (audioRef.current) {
       audioRef.current.pause();
     }
     setIsPlaying(false);
-  };
+  }, []);
 
   const handleTimeUpdate = () => {
     if (sample.video_url && videoRef.current) {
@@ -190,10 +217,10 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
       )}
 
       {/* Audio element for non-video samples */}
-      {!sample.video_url && sample.preview_url && (
+      {!sample.video_url && getPreviewUrl() && (
         <audio
           ref={audioRef}
-          src={sample.preview_url}
+          src={getPreviewUrl() || undefined}
           preload={preloadNext ? 'metadata' : 'none'}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => setIsPlaying(false)}
@@ -204,11 +231,11 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
       <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-6">
         <SocialActions
           postId={sample.id}
-          initialCounts={sample.counts}
+          initialCounts={sample._count}
           initialStates={{
-            isLikedByMe: sample.isLikedByMe,
-            isRepostedByMe: sample.isRepostedByMe,
-            isBookmarkedByMe: sample.isBookmarkedByMe,
+            isLikedByMe: false, // TODO: Implement user state
+            isRepostedByMe: false,
+            isBookmarkedByMe: false,
           }}
           onComment={() => setShowComments(true)}
           vertical={true}
@@ -221,11 +248,11 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
         <div className="flex items-center space-x-3 mb-3">
           <img
             src={sample.user.avatar_url || '/default-avatar.png'}
-            alt={sample.user.name || 'User'}
+            alt={sample.user.username || 'User'}
             className="w-10 h-10 rounded-full border-2 border-white"
           />
           <div>
-            <h3 className="text-white font-semibold">{sample.user.name || 'Unknown User'}</h3>
+            <h3 className="text-white font-semibold">{sample.user.username || 'Unknown User'}</h3>
             {sample.source_type === 'youtube' && (
               <p className="text-gray-300 text-sm">via YouTube</p>
             )}
@@ -244,10 +271,10 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
             <div className="flex flex-wrap gap-1 mb-3">
               {sample.tags.slice(0, 3).map((tag) => (
                 <span
-                  key={tag}
+                  key={tag.id}
                   className="px-2 py-1 bg-white/20 backdrop-blur-sm text-white text-xs rounded-full"
                 >
-                  #{tag}
+                  #{tag.name}
                 </span>
               ))}
               {sample.tags.length > 3 && (
@@ -276,7 +303,9 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
           </div>
 
           {/* Simple Waveform Visualization */}
-          {sample.waveform_url && (
+          {(() => {
+            const waveformFile = sample.media_files?.find(file => file.type === 'waveform_json');
+            return waveformFile && (
             <div className="h-12 flex items-end justify-center gap-0.5 px-2 bg-black/20 backdrop-blur-sm rounded">
               {Array.from({ length: 60 }, (_, i) => (
                 <div
@@ -289,7 +318,8 @@ export function FeedItem({ sample, isActive, preloadNext }: FeedItemProps) {
                 />
               ))}
             </div>
-          )}
+          );
+          })()}
         </div>
 
         {/* Controls */}

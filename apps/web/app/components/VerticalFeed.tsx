@@ -9,26 +9,34 @@ export interface FeedSample {
   artist_name: string | null;
   user: {
     id: string;
-    name: string | null;
+    username: string;
     avatar_url: string | null;
   };
-  preview_url: string | null;
-  video_url: string | null;
-  cover_url: string | null;
   duration_ms: number | null;
-  waveform_url: string | null;
   source_type: string;
   youtube_id: string | null;
-  counts: {
+  _count: {
     likes: number;
     comments: number;
-    reposts: number;
-    plays: number;
+    shares: number;
   };
-  tags: string[];
-  isLikedByMe: boolean;
-  isRepostedByMe: boolean;
-  isBookmarkedByMe: boolean;
+  tags: Array<{
+    id: string;
+    name: string;
+    normalized: string;
+    created_at: string;
+  }>;
+  media_files: Array<{
+    id: string;
+    post_id: string;
+    url: string;
+    type: string;
+    mime: string;
+    size?: number;
+    duration_ms?: number;
+  }>;
+  cover_url: string | null;
+  video_url: string | null;
 }
 
 interface VerticalFeedProps {
@@ -63,8 +71,8 @@ export function VerticalFeed({ initialSamples = [] }: VerticalFeedProps) {
 
       const data = await response.json();
 
-      setSamples((prev) => [...prev, ...data.items]);
-      setNextCursor(data.nextCursor);
+              setSamples((prev) => [...prev, ...data.data]);
+              setNextCursor(data.pagination.nextCursor);
     } catch (error) {
       console.error('Failed to fetch more samples:', error);
     } finally {

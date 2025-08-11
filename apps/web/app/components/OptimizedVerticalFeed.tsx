@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { OptimizedFeedItem } from './OptimizedFeedItem';
 import { apiClient } from '../lib/api-client';
 import { useMediaQuery } from '../hooks/use-media-query';
-import type { PostWithCounts } from '@musio/shared';
+import type { PostWithCounts } from '../types/shared';
 
 interface OptimizedVerticalFeedProps {
   initialPosts?: PostWithCounts[];
@@ -43,11 +43,11 @@ export function OptimizedVerticalFeed({ initialPosts = [] }: OptimizedVerticalFe
       setPosts(prevPosts => {
         // Avoid duplicates
         const existingIds = new Set(prevPosts.map(p => p.id));
-        const newPosts = data.items.filter((post: PostWithCounts) => !existingIds.has(post.id));
+        const newPosts = data.data.filter((post: PostWithCounts) => !existingIds.has(post.id));
         return [...prevPosts, ...newPosts];
       });
       
-      setNextCursor(data.nextCursor);
+      setNextCursor(data.pagination.nextCursor || null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch more posts';
       setError(errorMessage);

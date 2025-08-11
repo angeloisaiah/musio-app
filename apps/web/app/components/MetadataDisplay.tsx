@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatNumber } from '@musio/shared';
+import { formatNumber } from '../types/shared';
 
 interface DiscogsMetadata {
   title?: string;

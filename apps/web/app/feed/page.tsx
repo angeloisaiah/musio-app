@@ -1,11 +1,11 @@
 import { TikTokFeed } from '../components/TikTokFeed';
 import { apiClient } from '../lib/api-client';
-import type { PostWithCounts } from '@musio/shared';
+import type { PostWithCounts } from '../types/shared';
 
 async function fetchInitialFeed(): Promise<PostWithCounts[]> {
   try {
     const data = await apiClient.getFeed(5);
-    return data.items;
+    return data.data;
   } catch (error) {
     console.error('Error fetching initial feed:', error);
     return [];

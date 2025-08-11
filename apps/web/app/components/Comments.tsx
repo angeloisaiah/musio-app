@@ -39,7 +39,7 @@ export function Comments({ postId, isOpen, onClose }: CommentsProps) {
       const res = await fetch(`${apiUrl}/api/posts/${postId}/comments`);
       if (!res.ok) throw new Error('Failed to fetch comments');
       const data = await res.json();
-      setComments(data.items);
+              setComments(data.data);
     } catch (error) {
       console.error('Error fetching comments:', error);
     } finally {

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { TikTokFeed } from '../TikTokFeed';
 import { apiClient } from '../../lib/api-client';
-import type { PostWithCounts } from '@musio/shared';
+import type { PostWithCounts } from '../../types/shared';
 
 // Mock API client
 vi.mock('../../lib/api-client', () => ({
@@ -50,9 +50,9 @@ Object.defineProperty(window, 'matchMedia', {
 const mockPosts: PostWithCounts[] = [
   {
     id: '1',
+    user_id: 'user1',
     title: 'Test Track 1',
     caption: 'A great track',
-
     duration_ms: 180000,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
@@ -60,34 +60,46 @@ const mockPosts: PostWithCounts[] = [
     visibility: 'public',
     bpm: 128,
     key: 'C major',
-    video_url: null,
+    video_url: undefined,
     cover_url: 'https://example.com/cover1.jpg',
-    youtube_id: null,
+    youtube_id: undefined,
     source_type: 'user',
     artist_name: 'Test Artist 1',
     user: {
       id: 'user1',
-      name: 'User One',
+      username: 'User One',
+      email: 'user1@example.com',
       avatar_url: 'https://example.com/avatar1.jpg',
+      bio: 'Test user',
+      created_at: '2024-01-01T00:00:00Z',
+      updated_at: '2024-01-01T00:00:00Z',
     },
-    counts: {
+    _count: {
       likes: 42,
       comments: 5,
-      reposts: 12,
-      plays: 1234,
+      shares: 12,
     },
-    tags: ['electronic', 'house'],
-    preview_url: 'https://example.com/preview1.mp3',
-    waveform_url: 'https://example.com/waveform1.json',
-    isLikedByMe: false,
-    isRepostedByMe: false,
-    isBookmarkedByMe: false,
+    tags: [
+      { id: 'tag1', name: 'electronic', normalized: 'electronic', created_at: '2024-01-01T00:00:00Z' },
+      { id: 'tag2', name: 'house', normalized: 'house', created_at: '2024-01-01T00:00:00Z' }
+    ],
+    media_files: [
+      {
+        id: 'media1',
+        post_id: '1',
+        url: 'https://example.com/preview1.mp3',
+        type: 'preview',
+        mime: 'audio/mpeg',
+        size: 1024,
+        duration_ms: 180000,
+      }
+    ],
   },
   {
     id: '2',
+    user_id: 'user2',
     title: 'Test Track 2',
     caption: 'Another great track',
-
     duration_ms: 240000,
     created_at: '2024-01-02T00:00:00Z',
     updated_at: '2024-01-02T00:00:00Z',
@@ -96,27 +108,39 @@ const mockPosts: PostWithCounts[] = [
     bpm: 140,
     key: 'A minor',
     video_url: 'https://example.com/video2.mp4',
-    cover_url: null,
-    youtube_id: null,
+    cover_url: undefined,
+    youtube_id: undefined,
     source_type: 'user',
     artist_name: 'Test Artist 2',
     user: {
       id: 'user2',
-      name: 'User Two',
+      username: 'User Two',
+      email: 'user2@example.com',
       avatar_url: 'https://example.com/avatar2.jpg',
+      bio: 'Test user 2',
+      created_at: '2024-01-02T00:00:00Z',
+      updated_at: '2024-01-02T00:00:00Z',
     },
-    counts: {
+    _count: {
       likes: 89,
       comments: 15,
-      reposts: 23,
-      plays: 5678,
+      shares: 23,
     },
-    tags: ['techno', 'dark'],
-    preview_url: 'https://example.com/preview2.mp3',
-    waveform_url: 'https://example.com/waveform2.json',
-    isLikedByMe: true,
-    isRepostedByMe: false,
-    isBookmarkedByMe: true,
+    tags: [
+      { id: 'tag3', name: 'techno', normalized: 'techno', created_at: '2024-01-02T00:00:00Z' },
+      { id: 'tag4', name: 'dark', normalized: 'dark', created_at: '2024-01-02T00:00:00Z' }
+    ],
+    media_files: [
+      {
+        id: 'media2',
+        post_id: '2',
+        url: 'https://example.com/preview2.mp3',
+        type: 'preview',
+        mime: 'audio/mpeg',
+        size: 2048,
+        duration_ms: 240000,
+      }
+    ],
   },
 ];
 

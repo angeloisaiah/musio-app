@@ -40,7 +40,7 @@ export function NotificationBell() {
 
       if (res.ok) {
         const data = await res.json();
-        setNotifications(data.items);
+        setNotifications(data.data);
         setUnreadCount(data.unreadCount);
       }
     } catch (error) {

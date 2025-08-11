@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, memo } from 'react';
 import { useIntersectionObserver } from '../hooks/use-intersection-observer';
 import { SocialActions } from './SocialActions';
 import { Comments } from './Comments';
-import type { PostWithCounts } from '@musio/shared';
+import type { PostWithCounts } from '../types/shared';
 
 interface OptimizedFeedItemProps {
   post: PostWithCounts;
@@ -237,16 +237,19 @@ export const OptimizedFeedItem = memo(function OptimizedFeedItem({
           )}
 
           {/* Audio element for non-video samples */}
-          {!post.video_url && post.preview_url && (
-            <audio
-              ref={audioRef}
-              src={post.preview_url}
-              preload={preloadNext ? 'metadata' : 'none'}
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={() => setIsPlaying(false)}
-              onLoadedData={() => updateMediaVolume(isMuted ? 0 : volume)}
-            />
-          )}
+          {!post.video_url && (() => {
+            const previewFile = post.media_files?.find(file => file.type === 'preview');
+            return previewFile && (
+              <audio
+                ref={audioRef}
+                src={previewFile.url}
+                preload={preloadNext ? 'metadata' : 'none'}
+                onTimeUpdate={handleTimeUpdate}
+                onEnded={() => setIsPlaying(false)}
+                onLoadedData={() => updateMediaVolume(isMuted ? 0 : volume)}
+              />
+            );
+          })()}
         </>
       )}
 
@@ -264,11 +267,11 @@ export const OptimizedFeedItem = memo(function OptimizedFeedItem({
           <div className="absolute right-4 bottom-20 z-30 flex flex-col items-center space-y-6">
             <SocialActions 
               postId={post.id}
-              initialCounts={post.counts}
+              initialCounts={post._count}
               initialStates={{
-                isLikedByMe: post.isLikedByMe,
-                isRepostedByMe: post.isRepostedByMe,
-                isBookmarkedByMe: post.isBookmarkedByMe,
+                isLikedByMe: false, // TODO: Implement user state
+                isRepostedByMe: false,
+                isBookmarkedByMe: false,
               }}
               onComment={() => setShowComments(true)}
               vertical={true}
@@ -279,16 +282,16 @@ export const OptimizedFeedItem = memo(function OptimizedFeedItem({
           <div className="absolute bottom-0 left-0 right-16 p-4 z-20">
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                {post.user.avatar_url && (
+                {post.user?.avatar_url && (
                   <img
                     src={post.user.avatar_url}
-                    alt={post.user.name || 'User'}
+                    alt={post.user.username || 'User'}
                     className="w-8 h-8 rounded-full border-2 border-white"
                     loading="lazy"
                   />
                 )}
                 <span className="text-white font-medium">
-                  @{post.user.name || 'Unknown'}
+                  @{post.user?.username || 'Unknown'}
                 </span>
               </div>
               
@@ -302,14 +305,14 @@ export const OptimizedFeedItem = memo(function OptimizedFeedItem({
                 </p>
               )}
               
-              {post.tags.length > 0 && (
+              {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {post.tags.slice(0, 5).map((tag: string, index: number) => (
+                  {post.tags.slice(0, 5).map((tag, index) => (
                     <span
-                      key={index}
+                      key={tag.id}
                       className="text-white/80 text-xs bg-black/20 backdrop-blur-sm px-2 py-1 rounded-full"
                     >
-                      #{tag}
+                      #{tag.name}
                     </span>
                   ))}
                 </div>

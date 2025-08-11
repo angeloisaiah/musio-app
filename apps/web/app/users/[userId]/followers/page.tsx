@@ -2,14 +2,14 @@ import Link from 'next/link';
 
 interface Follower {
   id: string;
-  name: string | null;
+  username: string;
   avatar_url: string | null;
   followed_at: string;
 }
 
 async function fetchFollowers(
   userId: string,
-): Promise<{ items: Follower[]; nextCursor: string | null }> {
+): Promise<{ data: Follower[]; pagination: { nextCursor?: string } }> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const res = await fetch(`${apiUrl}/api/users/${userId}/followers`, {
     next: { revalidate: 30 },
@@ -38,7 +38,7 @@ async function fetchUserName(userId: string): Promise<string> {
 
 export default async function FollowersPage({ params }: { params: Promise<{ userId: string }> }) {
   const { userId } = await params;
-  let followers: { items: Follower[]; nextCursor: string | null };
+  let followers: { data: Follower[]; pagination: { nextCursor?: string } };
   let userName: string;
 
   try {
@@ -69,20 +69,20 @@ export default async function FollowersPage({ params }: { params: Promise<{ user
 
       <h1 className="text-2xl font-semibold mb-6">{userName}&apos;s Followers</h1>
 
-      {followers.items.length === 0 ? (
+      {followers.data.length === 0 ? (
         <div className="bg-neutral-900 rounded-lg p-8 text-center">
           <p className="text-neutral-400">No followers yet.</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {followers.items.map((follower) => (
+          {followers.data.map((follower) => (
             <div key={follower.id} className="bg-neutral-900 rounded-lg p-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-neutral-700 rounded-full flex items-center justify-center flex-shrink-0">
                   {follower.avatar_url ? (
                     <img
                       src={follower.avatar_url}
-                      alt={follower.name || 'User avatar'}
+                      alt={follower.username || 'User avatar'}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                   ) : (
@@ -101,7 +101,7 @@ export default async function FollowersPage({ params }: { params: Promise<{ user
                     href={`/users/${follower.id}`}
                     className="font-medium text-neutral-100 hover:text-neutral-300 transition-colors"
                   >
-                    {follower.name || 'Anonymous User'}
+                    {follower.username || 'Anonymous User'}
                   </Link>
                   <p className="text-sm text-neutral-400">
                     Followed on {new Date(follower.followed_at).toLocaleDateString()}
@@ -113,7 +113,7 @@ export default async function FollowersPage({ params }: { params: Promise<{ user
         </div>
       )}
 
-      {followers.nextCursor && (
+      {followers.pagination.nextCursor && (
         <div className="mt-6 text-center">
           <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
             Load More

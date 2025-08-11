@@ -120,7 +120,7 @@ export function ServiceWorkerProvider({ children }: ServiceWorkerProviderProps) 
       const response = await fetch('/api/feed?limit=5');
       if (response.ok) {
         const data = await response.json();
-        const audioUrls = data.items
+        const audioUrls = data.data
           .map((item: any) => item.preview_url)
           .filter(Boolean);
 

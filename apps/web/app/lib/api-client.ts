@@ -1,4 +1,4 @@
-import type { PostWithCounts, PaginatedResponse } from '@musio/shared';
+import type { PostWithCounts, PaginatedResponse } from '../types/shared';
 import { APIError, NetworkError } from './error-handler';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://musio-app-production.up.railway.app';
