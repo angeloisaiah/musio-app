@@ -21,7 +21,7 @@ export interface CloudinaryUploadResult {
 
 export interface MediaUploadOptions {
   folder?: string;
-  resource_type?: 'auto' | 'image' | 'video' | 'audio';
+  resource_type?: 'auto' | 'image' | 'video' | 'raw';
   transformation?: any[];
 }
 
@@ -40,7 +40,7 @@ export class CloudinaryService {
    */
   async uploadFile(
     filePath: string,
-    options: MediaUploadOptions = {}
+    options: MediaUploadOptions = {},
   ): Promise<CloudinaryUploadResult> {
     const defaultOptions = {
       folder: 'musio',
@@ -50,7 +50,7 @@ export class CloudinaryService {
 
     try {
       const result = await cloudinary.uploader.upload(filePath, defaultOptions);
-      
+
       return {
         public_id: result.public_id,
         secure_url: result.secure_url,
@@ -62,7 +62,9 @@ export class CloudinaryService {
       };
     } catch (error) {
       console.error('[CloudinaryService] Upload failed:', error);
-      throw new Error(`Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to upload file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -71,7 +73,7 @@ export class CloudinaryService {
    */
   async uploadFromUrl(
     url: string,
-    options: MediaUploadOptions = {}
+    options: MediaUploadOptions = {},
   ): Promise<CloudinaryUploadResult> {
     const defaultOptions = {
       folder: 'musio',
@@ -81,7 +83,7 @@ export class CloudinaryService {
 
     try {
       const result = await cloudinary.uploader.upload(url, defaultOptions);
-      
+
       return {
         public_id: result.public_id,
         secure_url: result.secure_url,
@@ -93,7 +95,9 @@ export class CloudinaryService {
       };
     } catch (error) {
       console.error('[CloudinaryService] URL upload failed:', error);
-      throw new Error(`Failed to upload from URL: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to upload from URL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -102,7 +106,7 @@ export class CloudinaryService {
    */
   async uploadAudioWithWaveform(
     audioPath: string,
-    postId: PostId
+    postId: PostId,
   ): Promise<{
     audio: CloudinaryUploadResult;
     waveform: CloudinaryUploadResult;
@@ -111,7 +115,7 @@ export class CloudinaryService {
       // Upload audio file
       const audioResult = await this.uploadFile(audioPath, {
         folder: `musio/audio/${postId}`,
-        resource_type: 'audio',
+        resource_type: 'auto',
         transformation: [
           { quality: 'auto:low' }, // Optimize for streaming
           { fetch_format: 'mp3' }, // Convert to MP3
@@ -121,7 +125,7 @@ export class CloudinaryService {
       // Generate waveform (Cloudinary can generate waveforms for audio)
       const waveformResult = await this.uploadFile(audioPath, {
         folder: `musio/waveforms/${postId}`,
-        resource_type: 'audio',
+        resource_type: 'auto',
         transformation: [
           { audio_codec: 'none' }, // Remove audio
           { video_codec: 'auto' }, // Generate video waveform
@@ -136,7 +140,9 @@ export class CloudinaryService {
       };
     } catch (error) {
       console.error('[CloudinaryService] Audio upload failed:', error);
-      throw new Error(`Failed to upload audio: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to upload audio: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -146,21 +152,22 @@ export class CloudinaryService {
   async uploadImage(
     imagePath: string,
     postId: PostId,
-    type: 'cover' | 'thumbnail' = 'cover'
+    type: 'cover' | 'thumbnail' = 'cover',
   ): Promise<CloudinaryUploadResult> {
-    const transformations = type === 'cover' 
-      ? [
-          { quality: 'auto:good' },
-          { fetch_format: 'auto' },
-          { crop: 'fill' },
-          { width: 800, height: 600 },
-        ]
-      : [
-          { quality: 'auto:low' },
-          { fetch_format: 'auto' },
-          { crop: 'fill' },
-          { width: 300, height: 200 },
-        ];
+    const transformations =
+      type === 'cover'
+        ? [
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' },
+            { crop: 'fill' },
+            { width: 800, height: 600 },
+          ]
+        : [
+            { quality: 'auto:low' },
+            { fetch_format: 'auto' },
+            { crop: 'fill' },
+            { width: 300, height: 200 },
+          ];
 
     return this.uploadFile(imagePath, {
       folder: `musio/images/${postId}`,
@@ -178,7 +185,9 @@ export class CloudinaryService {
       console.log(`[CloudinaryService] Deleted file: ${publicId}`);
     } catch (error) {
       console.error('[CloudinaryService] Delete failed:', error);
-      throw new Error(`Failed to delete file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to delete file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -199,7 +208,9 @@ export class CloudinaryService {
       return result;
     } catch (error) {
       console.error('[CloudinaryService] Get file info failed:', error);
-      throw new Error(`Failed to get file info: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to get file info: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 }

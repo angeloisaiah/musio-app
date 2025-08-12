@@ -27,11 +27,11 @@ export class PostService {
   async enrichPosts(posts: any[], userId?: string): Promise<PostWithCounts[]> {
     if (posts.length === 0) return [];
 
-    const postIds = posts.map(p => p.id);
-    
+    const postIds = posts.map((p) => p.id);
+
     // Get all counts and interactions
     const countsAndInteractions = await this.getPostCountsAndUserActions(postIds, userId);
-    
+
     // Get all tags for these posts
     const postTags = await this.db
       .selectFrom('post_tags as pt')
@@ -41,13 +41,16 @@ export class PostService {
       .execute();
 
     // Group tags by post
-    const tagsByPost = postTags.reduce((acc, { post_id, name }) => {
-      if (!acc[post_id]) acc[post_id] = [];
-      acc[post_id].push(name);
-      return acc;
-    }, {} as Record<string, string[]>);
+    const tagsByPost = postTags.reduce(
+      (acc, { post_id, name }) => {
+        if (!acc[post_id]) acc[post_id] = [];
+        acc[post_id].push(name);
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
 
-    return posts.map(post => {
+    return posts.map((post) => {
       const interactions = countsAndInteractions.get(post.id) || {
         likes: 0,
         comments: 0,
@@ -85,7 +88,10 @@ export class PostService {
   /**
    * Get post counts and user interactions in a single optimized query
    */
-  async getPostCountsAndUserActions(postIds: string[], userId?: string): Promise<Map<string, PostCounts & UserInteractions>> {
+  async getPostCountsAndUserActions(
+    postIds: string[],
+    userId?: string,
+  ): Promise<Map<string, PostCounts & UserInteractions>> {
     if (postIds.length === 0) return new Map();
 
     const [likeCounts, commentCounts, repostCounts, playCounts, userActions] = await Promise.all([
@@ -122,39 +128,41 @@ export class PostService {
         .execute(),
 
       // Get user interactions if userId provided
-      userId ? Promise.all([
-        this.db
-          .selectFrom('likes')
-          .select('post_id')
-          .where('user_id', '=', userId)
-          .where('post_id', 'in', postIds)
-          .execute(),
-        this.db
-          .selectFrom('reposts')
-          .select('post_id')
-          .where('user_id', '=', userId)
-          .where('post_id', 'in', postIds)
-          .execute(),
-        this.db
-          .selectFrom('bookmarks')
-          .select('post_id')
-          .where('user_id', '=', userId)
-          .where('post_id', 'in', postIds)
-          .execute(),
-      ]) : Promise.resolve([[], [], []]),
+      userId
+        ? Promise.all([
+            this.db
+              .selectFrom('likes')
+              .select('post_id')
+              .where('user_id', '=', userId)
+              .where('post_id', 'in', postIds)
+              .execute(),
+            this.db
+              .selectFrom('reposts')
+              .select('post_id')
+              .where('user_id', '=', userId)
+              .where('post_id', 'in', postIds)
+              .execute(),
+            this.db
+              .selectFrom('bookmarks')
+              .select('post_id')
+              .where('user_id', '=', userId)
+              .where('post_id', 'in', postIds)
+              .execute(),
+          ])
+        : Promise.resolve([[], [], []]),
     ]);
 
     // Create maps for quick lookup
-    const likeCountMap = new Map(likeCounts.map(r => [r.post_id, Number(r.count)]));
-    const commentCountMap = new Map(commentCounts.map(r => [r.post_id, Number(r.count)]));
-    const repostCountMap = new Map(repostCounts.map(r => [r.post_id, Number(r.count)]));
-    const playCountMap = new Map(playCounts.map(r => [r.post_id, Number(r.total || 0)]));
+    const likeCountMap = new Map(likeCounts.map((r) => [r.post_id, Number(r.count)]));
+    const commentCountMap = new Map(commentCounts.map((r) => [r.post_id, Number(r.count)]));
+    const repostCountMap = new Map(repostCounts.map((r) => [r.post_id, Number(r.count)]));
+    const playCountMap = new Map(playCounts.map((r) => [r.post_id, Number(r.total || 0)]));
 
     // User interactions
     const [userLikes, userReposts, userBookmarks] = userActions;
-    const likedPostIds = new Set(userLikes.map(r => r.post_id));
-    const repostedPostIds = new Set(userReposts.map(r => r.post_id));
-    const bookmarkedPostIds = new Set(userBookmarks.map(r => r.post_id));
+    const likedPostIds = new Set(userLikes.map((r) => r.post_id));
+    const repostedPostIds = new Set(userReposts.map((r) => r.post_id));
+    const bookmarkedPostIds = new Set(userBookmarks.map((r) => r.post_id));
 
     // Combine all data
     const result = new Map();
@@ -187,7 +195,7 @@ export class PostService {
         .where('post_id', 'in', postIds)
         .groupBy('post_id')
         .execute(),
-      
+
       // Get comment counts
       this.db
         .selectFrom('comments')
@@ -195,7 +203,7 @@ export class PostService {
         .where('post_id', 'in', postIds)
         .groupBy('post_id')
         .execute(),
-      
+
       // Get repost counts
       this.db
         .selectFrom('reposts')
@@ -203,7 +211,7 @@ export class PostService {
         .where('post_id', 'in', postIds)
         .groupBy('post_id')
         .execute(),
-      
+
       // Get play counts
       this.db
         .selectFrom('analytics')
@@ -216,7 +224,7 @@ export class PostService {
     const countsMap = new Map<string, PostCounts>();
 
     // Initialize all posts with zero counts
-    postIds.forEach(id => {
+    postIds.forEach((id) => {
       countsMap.set(id, { likes: 0, comments: 0, reposts: 0, plays: 0 });
     });
 
@@ -255,7 +263,10 @@ export class PostService {
   /**
    * Efficiently get user interactions for multiple posts
    */
-  async getUserInteractions(postIds: string[], userId: string): Promise<Map<string, UserInteractions>> {
+  async getUserInteractions(
+    postIds: string[],
+    userId: string,
+  ): Promise<Map<string, UserInteractions>> {
     if (postIds.length === 0) return new Map();
 
     const [likes, reposts, bookmarks] = await Promise.all([
@@ -265,14 +276,14 @@ export class PostService {
         .where('post_id', 'in', postIds)
         .where('user_id', '=', userId)
         .execute(),
-      
+
       this.db
         .selectFrom('reposts')
         .select('post_id')
         .where('post_id', 'in', postIds)
         .where('user_id', '=', userId)
         .execute(),
-      
+
       this.db
         .selectFrom('bookmarks')
         .select('post_id')
@@ -282,13 +293,13 @@ export class PostService {
     ]);
 
     const interactionsMap = new Map<string, UserInteractions>();
-    
+
     // Initialize all posts with false interactions
-    postIds.forEach(id => {
-      interactionsMap.set(id, { 
-        isLikedByMe: false, 
-        isRepostedByMe: false, 
-        isBookmarkedByMe: false 
+    postIds.forEach((id) => {
+      interactionsMap.set(id, {
+        isLikedByMe: false,
+        isRepostedByMe: false,
+        isBookmarkedByMe: false,
       });
     });
 
@@ -331,9 +342,9 @@ export class PostService {
       .execute();
 
     const tagsMap = new Map<string, string[]>();
-    
+
     // Initialize all posts with empty tag arrays
-    postIds.forEach(id => {
+    postIds.forEach((id) => {
       tagsMap.set(id, []);
     });
 
@@ -346,38 +357,6 @@ export class PostService {
     });
 
     return tagsMap;
-  }
-
-  /**
-   * Enrich posts with counts, interactions, and tags efficiently
-   */
-  async enrichPosts(posts: any[], userId?: string): Promise<PostWithCounts[]> {
-    if (posts.length === 0) return [];
-
-    const postIds = posts.map(p => p.id);
-    
-    const [countsMap, interactionsMap, tagsMap] = await Promise.all([
-      this.getPostCounts(postIds),
-      userId ? this.getUserInteractions(postIds, userId) : Promise.resolve(new Map()),
-      this.getPostTags(postIds),
-    ]);
-
-    return posts.map(post => {
-      const counts = countsMap.get(post.id) || { likes: 0, comments: 0, reposts: 0, plays: 0 };
-      const interactions = interactionsMap.get(post.id) || { 
-        isLikedByMe: false, 
-        isRepostedByMe: false, 
-        isBookmarkedByMe: false 
-      };
-      const tags = tagsMap.get(post.id) || [];
-
-      return {
-        ...post,
-        counts,
-        tags,
-        ...interactions,
-      };
-    });
   }
 
   /**
@@ -426,10 +405,7 @@ export class PostService {
       const [createdAt, id] = cursor.split('|');
       query = query.where((eb) =>
         eb('p.created_at', '<', createdAt).or(
-          eb.and([
-            eb('p.created_at', '=', createdAt),
-            eb('p.id', '<', id),
-          ]),
+          eb.and([eb('p.created_at', '=', createdAt), eb('p.id', '<', id)]),
         ),
       );
     }
@@ -437,7 +413,7 @@ export class PostService {
     const posts = await query.execute();
 
     // Transform to include user object
-    const transformedPosts = posts.map(post => ({
+    const transformedPosts = posts.map((post) => ({
       id: post.id,
       title: post.title,
       caption: post.caption,
@@ -460,9 +436,10 @@ export class PostService {
     // Enrich with counts, interactions, and tags
     const enrichedPosts = await this.enrichPosts(transformedPosts, userId);
 
-    const nextCursor = posts.length === limit && posts.length > 0
-      ? `${posts[posts.length - 1].created_at}|${posts[posts.length - 1].id}`
-      : null;
+    const nextCursor =
+      posts.length === limit && posts.length > 0
+        ? `${posts[posts.length - 1].created_at}|${posts[posts.length - 1].id}`
+        : null;
 
     return {
       items: enrichedPosts,

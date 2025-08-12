@@ -41,7 +41,7 @@ export class YouTubeService {
       proxyStreams: true,
       ...config,
     };
-    
+
     this.youtube = google.youtube({ version: 'v3', auth: config.apiKey });
     this.cache = new NodeCache({ stdTTL: this.config.cacheTtlHours! * 3600 }); // TTL in seconds
   }
@@ -80,9 +80,8 @@ export class YouTubeService {
         regionCode: 'US', // For consistent results
       });
 
-      const videoIds = searchResponse.data.items
-        ?.map((item: any) => item.id?.videoId)
-        .filter(Boolean) || [];
+      const videoIds =
+        searchResponse.data.items?.map((item: any) => item.id?.videoId).filter(Boolean) || [];
 
       if (videoIds.length === 0) {
         console.warn('[YouTubeService] No video IDs found in search results');
@@ -164,7 +163,9 @@ export class YouTubeService {
       .executeTakeFirst();
 
     if (existingPost) {
-      console.log(`[YouTubeService] YouTube video ${sample.youtube_id} already exists as post ${existingPost.id}`);
+      console.log(
+        `[YouTubeService] YouTube video ${sample.youtube_id} already exists as post ${existingPost.id}`,
+      );
       return existingPost.id;
     }
 
@@ -292,7 +293,8 @@ export class YouTubeService {
       const ytDlpProcess = spawn('yt-dlp', [
         '--dump-json',
         '--no-playlist',
-        '--format', 'best[height<=720]/best', // Prefer 720p or lower for bandwidth
+        '--format',
+        'best[height<=720]/best', // Prefer 720p or lower for bandwidth
         `https://www.youtube.com/watch?v=${videoId}`,
       ]);
 
@@ -325,7 +327,10 @@ export class YouTubeService {
             videoUrl: videoInfo.url || `/api/youtube/video/${videoId}`,
           });
         } catch (parseError) {
-          console.warn(`[YouTubeService] Failed to parse yt-dlp output for ${videoId}:`, parseError);
+          console.warn(
+            `[YouTubeService] Failed to parse yt-dlp output for ${videoId}:`,
+            parseError,
+          );
           resolve({
             audioUrl: `/api/youtube/audio/${videoId}`,
             videoUrl: `/api/youtube/video/${videoId}`,
@@ -363,21 +368,21 @@ export class YouTubeService {
         'rap beat sample',
         'hip hop drum loop',
       ],
-      'jazz': [
+      jazz: [
         'jazz instrumental sample',
         'jazz piano loop',
         'jazz drum break',
         'smooth jazz sample',
         'jazz fusion instrumental',
       ],
-      'electronic': [
+      electronic: [
         'electronic music sample',
         'synth loop',
         'electronic beat',
         'ambient electronic',
         'techno sample',
       ],
-      'soul': [
+      soul: [
         'soul music sample',
         'soul instrumental',
         'motown sample',
@@ -420,7 +425,7 @@ export class YouTubeService {
    */
   private getBestThumbnail(thumbnails: any): string {
     if (!thumbnails) return '';
-    
+
     return (
       thumbnails.maxres?.url ||
       thumbnails.high?.url ||
@@ -436,12 +441,33 @@ export class YouTubeService {
   private extractTags(title: string, description: string): string[] {
     const text = `${title} ${description}`.toLowerCase();
     const musicTags = [
-      'hip hop', 'jazz', 'funk', 'soul', 'r&b', 'electronic', 'trap', 'boom bap',
-      'lo-fi', 'instrumental', 'beat', 'sample', 'loop', 'drum', 'piano', 'guitar',
-      'bass', 'synth', 'vocals', 'remix', 'original', 'freestyle', 'chill', 'smooth',
+      'hip hop',
+      'jazz',
+      'funk',
+      'soul',
+      'r&b',
+      'electronic',
+      'trap',
+      'boom bap',
+      'lo-fi',
+      'instrumental',
+      'beat',
+      'sample',
+      'loop',
+      'drum',
+      'piano',
+      'guitar',
+      'bass',
+      'synth',
+      'vocals',
+      'remix',
+      'original',
+      'freestyle',
+      'chill',
+      'smooth',
     ];
 
-    return musicTags.filter(tag => text.includes(tag)).slice(0, 5); // Limit to 5 tags
+    return musicTags.filter((tag) => text.includes(tag)).slice(0, 5); // Limit to 5 tags
   }
 
   /**

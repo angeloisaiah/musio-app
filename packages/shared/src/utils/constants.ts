@@ -39,7 +39,7 @@ export const POST_VISIBILITY = {
   UNLISTED: 'unlisted',
 } as const;
 
-export type PostVisibility = typeof POST_VISIBILITY[keyof typeof POST_VISIBILITY];
+export type PostVisibility = (typeof POST_VISIBILITY)[keyof typeof POST_VISIBILITY];
 
 // Post source types
 export const POST_SOURCE = {
@@ -48,7 +48,7 @@ export const POST_SOURCE = {
   IMPORT: 'import',
 } as const;
 
-export type PostSource = typeof POST_SOURCE[keyof typeof POST_SOURCE];
+export type PostSource = (typeof POST_SOURCE)[keyof typeof POST_SOURCE];
 
 // Media file types
 export const MEDIA_TYPE = {
@@ -60,7 +60,7 @@ export const MEDIA_TYPE = {
   THUMBNAIL: 'thumbnail',
 } as const;
 
-export type MediaType = typeof MEDIA_TYPE[keyof typeof MEDIA_TYPE];
+export type MediaType = (typeof MEDIA_TYPE)[keyof typeof MEDIA_TYPE];
 
 // Notification types
 export const NOTIFICATION_TYPE = {
@@ -71,7 +71,7 @@ export const NOTIFICATION_TYPE = {
   MENTION: 'mention',
 } as const;
 
-export type NotificationType = typeof NOTIFICATION_TYPE[keyof typeof NOTIFICATION_TYPE];
+export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
 
 // API endpoints
 export const API_ENDPOINTS = {
@@ -122,4 +122,4 @@ export const ERROR_CODES = {
   EXTERNAL_SERVICE_ERROR: 'EXTERNAL_SERVICE_ERROR',
 } as const;
 
-export type ErrorCode = typeof ERROR_CODES[keyof typeof ERROR_CODES];
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];

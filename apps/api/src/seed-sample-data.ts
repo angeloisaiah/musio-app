@@ -4,17 +4,18 @@ import { randomUUID } from 'node:crypto';
 
 async function seedSampleData() {
   const db = createDb();
-  
+
   try {
     console.log('🌱 Seeding sample data...');
-    
+
     // Create sample users
     const users = [
       {
         id: randomUUID(),
         name: 'DJ Cosmic',
         email: 'dj.cosmic@example.com',
-        avatar_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=150&h=150&fit=crop&crop=face',
+        avatar_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=150&h=150&fit=crop&crop=face',
         bio: 'Electronic music producer and DJ',
         created_at: new Date().toISOString(),
       },
@@ -22,7 +23,8 @@ async function seedSampleData() {
         id: randomUUID(),
         name: 'Beat Maker',
         email: 'beatmaker@example.com',
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+        avatar_url:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
         bio: 'Hip-hop producer from LA',
         created_at: new Date().toISOString(),
       },
@@ -30,7 +32,8 @@ async function seedSampleData() {
         id: randomUUID(),
         name: 'Synth Queen',
         email: 'synthqueen@example.com',
-        avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b332c1f5?w=150&h=150&fit=crop&crop=face',
+        avatar_url:
+          'https://images.unsplash.com/photo-1494790108755-2616b332c1f5?w=150&h=150&fit=crop&crop=face',
         bio: 'Synthwave and retrowave artist',
         created_at: new Date().toISOString(),
       },
@@ -38,7 +41,8 @@ async function seedSampleData() {
         id: randomUUID(),
         name: 'Bass Drop',
         email: 'bassdrop@example.com',
-        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+        avatar_url:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
         bio: 'Dubstep and bass music producer',
         created_at: new Date().toISOString(),
       },
@@ -53,7 +57,8 @@ async function seedSampleData() {
         id: randomUUID(),
         user_id: users[0].id,
         title: 'Cosmic Journey',
-        caption: 'A deep house track that takes you on a journey through space and time. Perfect for late night drives.',
+        caption:
+          'A deep house track that takes you on a journey through space and time. Perfect for late night drives.',
         artist_name: 'DJ Cosmic',
         duration_ms: 240000,
         bpm: 124,
@@ -61,7 +66,8 @@ async function seedSampleData() {
         visibility: 'public',
         ready: true,
         source_type: 'user',
-        cover_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
+        cover_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
         created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
         updated_at: new Date(Date.now() - 3600000).toISOString(),
       },
@@ -77,7 +83,8 @@ async function seedSampleData() {
         visibility: 'public',
         ready: true,
         source_type: 'user',
-        cover_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
+        cover_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
         created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
         updated_at: new Date(Date.now() - 7200000).toISOString(),
       },
@@ -93,7 +100,8 @@ async function seedSampleData() {
         visibility: 'public',
         ready: true,
         source_type: 'user',
-        cover_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
+        cover_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
         created_at: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
         updated_at: new Date(Date.now() - 10800000).toISOString(),
       },
@@ -109,7 +117,8 @@ async function seedSampleData() {
         visibility: 'public',
         ready: true,
         source_type: 'user',
-        cover_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
+        cover_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
         created_at: new Date(Date.now() - 14400000).toISOString(), // 4 hours ago
         updated_at: new Date(Date.now() - 14400000).toISOString(),
       },
@@ -125,7 +134,8 @@ async function seedSampleData() {
         visibility: 'public',
         ready: true,
         source_type: 'user',
-        cover_url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
+        cover_url:
+          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop',
         created_at: new Date(Date.now() - 18000000).toISOString(), // 5 hours ago
         updated_at: new Date(Date.now() - 18000000).toISOString(),
       },
@@ -135,7 +145,7 @@ async function seedSampleData() {
     console.log(`✅ Created ${posts.length} sample posts`);
 
     // Create sample media files (preview audio)
-    const mediaFiles = posts.map(post => ({
+    const mediaFiles = posts.map((post) => ({
       id: randomUUID(),
       post_id: post.id,
       url: `https://www.soundjay.com/misc/sounds-1015.mp3`, // Sample audio URL
@@ -152,61 +162,67 @@ async function seedSampleData() {
 
     // Create sample tags
     const tags = [
-      { id: randomUUID(), name: 'House', normalized: 'house' },
-      { id: randomUUID(), name: 'Hip-Hop', normalized: 'hip-hop' },
-      { id: randomUUID(), name: 'Synthwave', normalized: 'synthwave' },
-      { id: randomUUID(), name: 'Dubstep', normalized: 'dubstep' },
-      { id: randomUUID(), name: 'Ambient', normalized: 'ambient' },
-      { id: randomUUID(), name: 'Electronic', normalized: 'electronic' },
-      { id: randomUUID(), name: 'Chill', normalized: 'chill' },
-      { id: randomUUID(), name: 'Bass', normalized: 'bass' },
+      { name: 'House', normalized: 'house' },
+      { name: 'Hip-Hop', normalized: 'hip-hop' },
+      { name: 'Synthwave', normalized: 'synthwave' },
+      { name: 'Dubstep', normalized: 'dubstep' },
+      { name: 'Ambient', normalized: 'ambient' },
+      { name: 'Electronic', normalized: 'electronic' },
+      { name: 'Chill', normalized: 'chill' },
+      { name: 'Bass', normalized: 'bass' },
     ];
 
-    await db.insertInto('tags').values(tags).execute();
-    console.log(`✅ Created ${tags.length} sample tags`);
+    const insertedTags = await db.insertInto('tags').values(tags).returning('id').execute();
+    console.log(`✅ Created ${insertedTags.length} sample tags`);
 
     // Link posts to tags
     const postTags = [
-      { post_id: posts[0].id, tag_id: tags[0].id }, // Cosmic Journey - House
-      { post_id: posts[0].id, tag_id: tags[5].id }, // Cosmic Journey - Electronic
-      { post_id: posts[1].id, tag_id: tags[1].id }, // Street Rhythms - Hip-Hop
-      { post_id: posts[1].id, tag_id: tags[7].id }, // Street Rhythms - Bass
-      { post_id: posts[2].id, tag_id: tags[2].id }, // Neon Dreams - Synthwave
-      { post_id: posts[2].id, tag_id: tags[5].id }, // Neon Dreams - Electronic
-      { post_id: posts[3].id, tag_id: tags[3].id }, // Drop the Bass - Dubstep
-      { post_id: posts[3].id, tag_id: tags[7].id }, // Drop the Bass - Bass
-      { post_id: posts[4].id, tag_id: tags[4].id }, // Ambient Spaces - Ambient
-      { post_id: posts[4].id, tag_id: tags[6].id }, // Ambient Spaces - Chill
+      { post_id: posts[0].id, tag_id: insertedTags[0].id }, // Cosmic Journey - House
+      { post_id: posts[0].id, tag_id: insertedTags[5].id }, // Cosmic Journey - Electronic
+      { post_id: posts[1].id, tag_id: insertedTags[1].id }, // Street Rhythms - Hip-Hop
+      { post_id: posts[1].id, tag_id: insertedTags[7].id }, // Street Rhythms - Bass
+      { post_id: posts[2].id, tag_id: insertedTags[2].id }, // Neon Dreams - Synthwave
+      { post_id: posts[2].id, tag_id: insertedTags[5].id }, // Neon Dreams - Electronic
+      { post_id: posts[3].id, tag_id: insertedTags[3].id }, // Drop the Bass - Dubstep
+      { post_id: posts[3].id, tag_id: insertedTags[7].id }, // Drop the Bass - Bass
+      { post_id: posts[4].id, tag_id: insertedTags[4].id }, // Ambient Spaces - Ambient
+      { post_id: posts[4].id, tag_id: insertedTags[6].id }, // Ambient Spaces - Chill
     ];
 
     await db.insertInto('post_tags').values(postTags).execute();
     console.log(`✅ Created ${postTags.length} post-tag associations`);
 
     // Create sample analytics
-    const analytics = posts.map(post => ({
+    const analytics = posts.map((post) => ({
       post_id: post.id,
-      views: Math.floor(Math.random() * 10000) + 100,
-      plays: Math.floor(Math.random() * 5000) + 50,
-      likes: Math.floor(Math.random() * 1000) + 10,
-      reposts: Math.floor(Math.random() * 200) + 5,
+      views: BigInt(Math.floor(Math.random() * 10000) + 100),
+      plays: BigInt(Math.floor(Math.random() * 5000) + 50),
+      likes: BigInt(Math.floor(Math.random() * 1000) + 10),
+      reposts: BigInt(Math.floor(Math.random() * 200) + 5),
     }));
 
     await db.insertInto('analytics').values(analytics).execute();
     console.log(`✅ Created analytics for ${analytics.length} posts`);
 
     // Create some sample likes and comments
-    const likes = [];
-    const comments = [];
+    const likes: Array<{ id: string; post_id: string; user_id: string; created_at: string }> = [];
+    const comments: Array<{
+      id: string;
+      post_id: string;
+      user_id: string;
+      text: string;
+      created_at: string;
+    }> = [];
 
     for (let i = 0; i < 20; i++) {
       const randomPost = posts[Math.floor(Math.random() * posts.length)];
       const randomUser = users[Math.floor(Math.random() * users.length)];
-      
+
       // Avoid duplicate likes
-      const likeExists = likes.some(like => 
-        like.post_id === randomPost.id && like.user_id === randomUser.id
+      const likeExists = likes.some(
+        (like) => like.post_id === randomPost.id && like.user_id === randomUser.id,
       );
-      
+
       if (!likeExists) {
         likes.push({
           id: randomUUID(),
@@ -230,7 +246,7 @@ async function seedSampleData() {
       'The bass hits different',
       'More tracks like this please!',
       'Instant classic',
-      'Can\'t stop listening to this',
+      "Can't stop listening to this",
       'The production quality is amazing',
     ];
 
@@ -238,14 +254,13 @@ async function seedSampleData() {
       const randomPost = posts[Math.floor(Math.random() * posts.length)];
       const randomUser = users[Math.floor(Math.random() * users.length)];
       const randomComment = sampleComments[Math.floor(Math.random() * sampleComments.length)];
-      
+
       comments.push({
         id: randomUUID(),
         post_id: randomPost.id,
         user_id: randomUser.id,
-        content: randomComment,
+        text: randomComment,
         created_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-        updated_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
       });
     }
 
@@ -262,7 +277,6 @@ async function seedSampleData() {
     console.log(`- ${analytics.length} analytics records`);
     console.log(`- ${likes.length} likes`);
     console.log(`- ${comments.length} comments`);
-
   } catch (error) {
     console.error('❌ Error seeding sample data:', error);
     throw error;

@@ -88,7 +88,7 @@ export class MetadataService {
 
     if (now - lastCall < minInterval) {
       const waitTime = minInterval - (now - lastCall);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
     }
 
     this.rateLimitCache.set(key, Date.now());
@@ -112,7 +112,7 @@ export class MetadataService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
       },
       body: 'grant_type=client_credentials',
     });
@@ -145,7 +145,7 @@ export class MetadataService {
 
     const searchQuery = searchTerms.join(' AND ');
     const cacheKey = `discogs:${Buffer.from(searchQuery).toString('base64')}`;
-    
+
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached) {
@@ -162,7 +162,7 @@ export class MetadataService {
 
       const response = await fetch(url.toString(), {
         headers: {
-          'Authorization': `Discogs token=${discogsToken}`,
+          Authorization: `Discogs token=${discogsToken}`,
           'User-Agent': 'MusioApp/1.0',
         },
       });
@@ -175,7 +175,7 @@ export class MetadataService {
       }
 
       const data: DiscogsSearchResult = await response.json();
-      
+
       if (data.results && data.results.length > 0) {
         const result = data.results[0]; // Take the first result
         const metadata = {
@@ -218,7 +218,7 @@ export class MetadataService {
 
       const searchQuery = searchTerms.join(' AND ');
       const cacheKey = `spotify_track:${Buffer.from(searchQuery).toString('base64')}`;
-      
+
       // Check cache first
       const cached = this.cache.get(cacheKey);
       if (cached) {
@@ -234,7 +234,7 @@ export class MetadataService {
 
       const response = await fetch(url.toString(), {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -246,13 +246,13 @@ export class MetadataService {
       }
 
       const data: SpotifySearchResult = await response.json();
-      
+
       if (data.tracks.items && data.tracks.items.length > 0) {
         const track = data.tracks.items[0];
-        
+
         // Get audio features for the track
         const audioFeatures = await this.getSpotifyAudioFeatures(track.id);
-        
+
         const metadata = {
           name: track.name,
           artists: track.artists,
@@ -280,7 +280,7 @@ export class MetadataService {
     try {
       const token = await this.getSpotifyToken();
       const cacheKey = `spotify_features:${trackId}`;
-      
+
       // Check cache first
       const cached = this.cache.get(cacheKey);
       if (cached) {
@@ -291,7 +291,7 @@ export class MetadataService {
 
       const response = await fetch(`https://api.spotify.com/v1/audio-features/${trackId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -301,7 +301,7 @@ export class MetadataService {
       }
 
       const features: SpotifyAudioFeatures = await response.json();
-      
+
       // Cache for 24 hours (audio features don't change)
       this.cache.set(cacheKey, features, 86400);
       return features;
@@ -313,7 +313,7 @@ export class MetadataService {
 
   public async getMetadata(query: TrackQuery): Promise<any> {
     const cacheKey = `metadata:${JSON.stringify(query)}`;
-    
+
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached) {
@@ -347,9 +347,11 @@ export class MetadataService {
     return metadata;
   }
 
-  public async getPopularGenres(limit: number = 20): Promise<Array<{ name: string; count: number }>> {
+  public async getPopularGenres(
+    limit: number = 20,
+  ): Promise<Array<{ name: string; count: number }>> {
     const cacheKey = 'popular_genres';
-    
+
     // Check cache first (24 hour cache for genres)
     const cached = this.cache.get(cacheKey);
     if (cached) {
@@ -380,20 +382,20 @@ export class MetadataService {
 
     // Cache for 24 hours
     this.cache.set(cacheKey, genres, 86400);
-    
+
     return genres.slice(0, limit);
   }
 
   public async searchSpotify(
-    query: string, 
+    query: string,
     type: 'track' | 'artist' | 'album' = 'track',
     limit: number = 20,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<any> {
     try {
       const token = await this.getSpotifyToken();
       const cacheKey = `spotify_search:${query}:${type}:${limit}:${offset}`;
-      
+
       // Check cache first
       const cached = this.cache.get(cacheKey);
       if (cached) {
@@ -410,7 +412,7 @@ export class MetadataService {
 
       const response = await fetch(url.toString(), {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -422,7 +424,7 @@ export class MetadataService {
       }
 
       const data: SpotifySearchResult = await response.json();
-      
+
       const result = {
         tracks: data.tracks.items,
         total: data.tracks.total,

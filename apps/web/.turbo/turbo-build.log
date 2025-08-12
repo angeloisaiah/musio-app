@@ -10,3 +10,25 @@
      ✓ appDir
 
    Creating an optimized production build ...
+Failed to compile.
+
+HookWebpackError: UNKNOWN: unknown error, open 'C:\Users\changeme\Documents\samplette-inspired-app\musio.app\apps\web\.next\server\pages-manifest.json'
+    at makeWebpackError (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:29:315765)
+    at C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:29:106471
+    at eval (eval at create (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:14:9224), <anonymous>:106:1)
+-- inner error --
+Error: UNKNOWN: unknown error, open 'C:\Users\changeme\Documents\samplette-inspired-app\musio.app\apps\web\.next\server\pages-manifest.json'
+    at async open (node:internal/fs/promises:639:25)
+    at async Object.writeFile (node:internal/fs/promises:1213:14)
+    at async writeMergedManifest (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\build\webpack\plugins\pages-manifest-plugin.js:103:13)
+    at async PagesManifestPlugin.createAssets (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\build\webpack\plugins\pages-manifest-plugin.js:110:13)
+caused by plugins in Compilation.hooks.processAssets
+Error: UNKNOWN: unknown error, open 'C:\Users\changeme\Documents\samplette-inspired-app\musio.app\apps\web\.next\server\pages-manifest.json'
+    at async open (node:internal/fs/promises:639:25)
+    at async Object.writeFile (node:internal/fs/promises:1213:14)
+    at async writeMergedManifest (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\build\webpack\plugins\pages-manifest-plugin.js:103:13)
+    at async PagesManifestPlugin.createAssets (C:\Users\changeme\Documents\samplette-inspired-app\musio.app\node_modules\.pnpm\next@15.4.6_@babel+core@7.28.0_react-dom@18.3.1_react@18.3.1\node_modules\next\dist\build\webpack\plugins\pages-manifest-plugin.js:110:13)
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.

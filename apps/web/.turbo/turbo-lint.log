@@ -2,12 +2,3 @@
 > @musio/web@0.0.0 lint C:\Users\changeme\Documents\samplette-inspired-app\musio.app\apps\web
 > eslint .
 
-
-Oops! Something went wrong! :(
-
-ESLint: 8.57.1
-
-No files matching the pattern "." were found.
-Please check for typing mistakes in the pattern.
-
- ELIFECYCLE  Command failed with exit code 2.

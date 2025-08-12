@@ -8,17 +8,21 @@ export async function feedRoutes(fastify: FastifyInstance) {
   const postService = new PostService(db);
 
   // TikTok-style vertical feed
-  fastify.get('/api/feed', {
-    schema: {
-      querystring: FeedQuerySchema,
-      response: {
-        200: FeedResponseSchema,
+  fastify.get(
+    '/api/feed',
+    {
+      schema: {
+        querystring: FeedQuerySchema,
+        response: {
+          200: FeedResponseSchema,
+        },
       },
     },
-  }, async (request) => {
-    const { limit = 20, cursor } = request.query as any;
-    const userId = (request as any).user?.sub; // Optional user for personalization
+    async (request) => {
+      const { limit = 20, cursor } = request.query as any;
+      const userId = (request as any).user?.sub; // Optional user for personalization
 
-    return await postService.getPostsFeed(limit, cursor, userId);
-  });
+      return await postService.getPostsFeed(limit, cursor, userId);
+    },
+  );
 }

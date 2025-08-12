@@ -3,26 +3,30 @@ import { Kysely } from 'kysely';
 export async function up(db: Kysely<any>): Promise<void> {
   // Check existing columns to avoid conflicts
   const metadata = await db.introspection.getMetadata();
-  const postsTable = metadata.tables.find(t => t.name === 'posts');
-  const existingColumns = postsTable?.columns.map(c => c.name) || [];
-  
+  const postsTable = metadata.tables.find((t) => t.name === 'posts');
+  const existingColumns = postsTable?.columns.map((c) => c.name) || [];
+
   // Add columns to posts table for video and cover art support (only if they don't exist)
   const columnsToAdd = [
     { name: 'video_url', type: 'text' },
     { name: 'cover_url', type: 'text' },
     { name: 'youtube_id', type: 'text' },
     { name: 'source_type', type: 'text', defaultValue: 'user' },
-    { name: 'artist_name', type: 'text' }
+    { name: 'artist_name', type: 'text' },
   ];
 
   for (const column of columnsToAdd) {
     if (!existingColumns.includes(column.name)) {
       if (column.name === 'source_type') {
-        await db.schema.alterTable('posts')
-          .addColumn(column.name, column.type as any, (c) => c.notNull().defaultTo(column.defaultValue))
+        await db.schema
+          .alterTable('posts')
+          .addColumn(column.name, column.type as any, (c) =>
+            c.notNull().defaultTo(column.defaultValue),
+          )
           .execute();
       } else {
-        await db.schema.alterTable('posts')
+        await db.schema
+          .alterTable('posts')
           .addColumn(column.name, column.type as any)
           .execute();
       }
@@ -42,19 +46,19 @@ export async function up(db: Kysely<any>): Promise<void> {
       }
     }
   };
-  
+
   await createIndexSafely('posts_source_type_idx', () =>
-    db.schema.createIndex('posts_source_type_idx').on('posts').column('source_type').execute()
+    db.schema.createIndex('posts_source_type_idx').on('posts').column('source_type').execute(),
   );
-  
+
   await createIndexSafely('posts_youtube_id_idx', () =>
-    db.schema.createIndex('posts_youtube_id_idx').on('posts').column('youtube_id').execute()
+    db.schema.createIndex('posts_youtube_id_idx').on('posts').column('youtube_id').execute(),
   );
 
   // Extend media_files table to support video types (check existing columns)
-  const mediaFilesTable = metadata.tables.find(t => t.name === 'media_files');
-  const mediaFilesColumns = mediaFilesTable?.columns.map(c => c.name) || [];
-  
+  const mediaFilesTable = metadata.tables.find((t) => t.name === 'media_files');
+  const mediaFilesColumns = mediaFilesTable?.columns.map((c) => c.name) || [];
+
   const mediaColumnsToAdd = ['width', 'height'];
   for (const columnName of mediaColumnsToAdd) {
     if (!mediaFilesColumns.includes(columnName)) {

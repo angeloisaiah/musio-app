@@ -4,11 +4,7 @@ export const PostQuerySchema = Type.Object({
   limit: Type.Optional(Type.Integer({ minimum: 1, maximum: 50 })),
   cursor: Type.Optional(Type.String()),
   filter: Type.Optional(
-    Type.Union([
-      Type.Literal('for_you'),
-      Type.Literal('trending'),
-      Type.Literal('following'),
-    ]),
+    Type.Union([Type.Literal('for_you'), Type.Literal('trending'), Type.Literal('following')]),
   ),
 });
 

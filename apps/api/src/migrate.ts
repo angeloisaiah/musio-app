@@ -10,7 +10,13 @@ async function migrate(direction: Direction) {
   await ensurePgvector(db as any); // Type assertion to work around pgvector type issues
 
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const files = ['0001_init.ts', '0002_credentials.ts', '0003_fix_embeddings_and_notifications.ts', '0004_add_video_and_cover_support.ts', '0005_add_performance_indexes.ts']; // simple ordered list
+  const files = [
+    '0001_init.ts',
+    '0002_credentials.ts',
+    '0003_fix_embeddings_and_notifications.ts',
+    '0004_add_video_and_cover_support.ts',
+    '0005_add_performance_indexes.ts',
+  ]; // simple ordered list
   if (direction === 'up') {
     for (const f of files) {
       const url = pathToFileURL(path.resolve(__dirname, `migrations/${f}`)).href;

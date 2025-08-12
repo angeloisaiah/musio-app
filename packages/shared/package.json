@@ -9,10 +9,11 @@
     "dist/**/*"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run -c vitest.config.ts",
-    "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "kysely": "^0.28.5"

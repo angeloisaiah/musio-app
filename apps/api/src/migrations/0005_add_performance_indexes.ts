@@ -3,8 +3,10 @@ import type { Kysely } from 'kysely';
 export async function up(db: Kysely<any>): Promise<void> {
   // Check existing indexes to avoid conflicts
   const metadata = await db.introspection.getMetadata();
-  const allIndexes = metadata.tables.flatMap(t => (t as any).indexes?.map((i: any) => i.name) || []);
-  
+  const allIndexes = metadata.tables.flatMap(
+    (t) => (t as any).indexes?.map((i: any) => i.name) || [],
+  );
+
   // Helper function to create index if it doesn't exist
   const createIndexIfNotExists = async (indexName: string, createFn: () => Promise<void>) => {
     if (!allIndexes.includes(indexName)) {
@@ -18,90 +20,152 @@ export async function up(db: Kysely<any>): Promise<void> {
       }
     }
   };
-  
+
   // Posts table indexes for common queries
   await createIndexIfNotExists('posts_user_id_created_at_idx', () =>
     db.schema
       .createIndex('posts_user_id_created_at_idx')
       .on('posts')
       .columns(['user_id', 'created_at desc'])
-      .execute()
+      .execute(),
   );
 
   // Apply safe index creation to all indexes
   const indexesToCreate = [
     {
       name: 'posts_ready_visibility_created_at_idx',
-      create: () => db.schema.createIndex('posts_ready_visibility_created_at_idx').on('posts').columns(['ready', 'visibility', 'created_at desc']).execute()
+      create: () =>
+        db.schema
+          .createIndex('posts_ready_visibility_created_at_idx')
+          .on('posts')
+          .columns(['ready', 'visibility', 'created_at desc'])
+          .execute(),
     },
     {
-      name: 'posts_created_at_id_idx', 
-      create: () => db.schema.createIndex('posts_created_at_id_idx').on('posts').columns(['created_at desc', 'id desc']).execute()
+      name: 'posts_created_at_id_idx',
+      create: () =>
+        db.schema
+          .createIndex('posts_created_at_id_idx')
+          .on('posts')
+          .columns(['created_at desc', 'id desc'])
+          .execute(),
     },
     {
       name: 'media_files_post_id_type_idx',
-      create: () => db.schema.createIndex('media_files_post_id_type_idx').on('media_files').columns(['post_id', 'type']).execute()
+      create: () =>
+        db.schema
+          .createIndex('media_files_post_id_type_idx')
+          .on('media_files')
+          .columns(['post_id', 'type'])
+          .execute(),
     },
     {
       name: 'likes_post_id_idx',
-      create: () => db.schema.createIndex('likes_post_id_idx').on('likes').column('post_id').execute()
+      create: () =>
+        db.schema.createIndex('likes_post_id_idx').on('likes').column('post_id').execute(),
     },
     {
       name: 'likes_user_id_post_id_idx',
-      create: () => db.schema.createIndex('likes_user_id_post_id_idx').on('likes').columns(['user_id', 'post_id']).execute()
+      create: () =>
+        db.schema
+          .createIndex('likes_user_id_post_id_idx')
+          .on('likes')
+          .columns(['user_id', 'post_id'])
+          .execute(),
     },
     {
       name: 'comments_post_id_created_at_idx',
-      create: () => db.schema.createIndex('comments_post_id_created_at_idx').on('comments').columns(['post_id', 'created_at desc']).execute()
+      create: () =>
+        db.schema
+          .createIndex('comments_post_id_created_at_idx')
+          .on('comments')
+          .columns(['post_id', 'created_at desc'])
+          .execute(),
     },
     {
       name: 'reposts_post_id_idx',
-      create: () => db.schema.createIndex('reposts_post_id_idx').on('reposts').column('post_id').execute()
+      create: () =>
+        db.schema.createIndex('reposts_post_id_idx').on('reposts').column('post_id').execute(),
     },
     {
       name: 'reposts_user_id_post_id_idx',
-      create: () => db.schema.createIndex('reposts_user_id_post_id_idx').on('reposts').columns(['user_id', 'post_id']).execute()
+      create: () =>
+        db.schema
+          .createIndex('reposts_user_id_post_id_idx')
+          .on('reposts')
+          .columns(['user_id', 'post_id'])
+          .execute(),
     },
     {
       name: 'bookmarks_post_id_idx',
-      create: () => db.schema.createIndex('bookmarks_post_id_idx').on('bookmarks').column('post_id').execute()
+      create: () =>
+        db.schema.createIndex('bookmarks_post_id_idx').on('bookmarks').column('post_id').execute(),
     },
     {
       name: 'bookmarks_user_id_post_id_idx',
-      create: () => db.schema.createIndex('bookmarks_user_id_post_id_idx').on('bookmarks').columns(['user_id', 'post_id']).execute()
+      create: () =>
+        db.schema
+          .createIndex('bookmarks_user_id_post_id_idx')
+          .on('bookmarks')
+          .columns(['user_id', 'post_id'])
+          .execute(),
     },
     {
       name: 'post_tags_post_id_idx',
-      create: () => db.schema.createIndex('post_tags_post_id_idx').on('post_tags').column('post_id').execute()
+      create: () =>
+        db.schema.createIndex('post_tags_post_id_idx').on('post_tags').column('post_id').execute(),
     },
     {
       name: 'post_tags_tag_id_idx',
-      create: () => db.schema.createIndex('post_tags_tag_id_idx').on('post_tags').column('tag_id').execute()
+      create: () =>
+        db.schema.createIndex('post_tags_tag_id_idx').on('post_tags').column('tag_id').execute(),
     },
     {
       name: 'tags_normalized_idx',
-      create: () => db.schema.createIndex('tags_normalized_idx').on('tags').column('normalized').execute()
+      create: () =>
+        db.schema.createIndex('tags_normalized_idx').on('tags').column('normalized').execute(),
     },
     {
       name: 'analytics_post_id_idx',
-      create: () => db.schema.createIndex('analytics_post_id_idx').on('analytics').column('post_id').execute()
+      create: () =>
+        db.schema.createIndex('analytics_post_id_idx').on('analytics').column('post_id').execute(),
     },
     {
       name: 'follows_follower_id_idx',
-      create: () => db.schema.createIndex('follows_follower_id_idx').on('follows').column('follower_id').execute()
+      create: () =>
+        db.schema
+          .createIndex('follows_follower_id_idx')
+          .on('follows')
+          .column('follower_id')
+          .execute(),
     },
     {
       name: 'follows_followee_id_idx',
-      create: () => db.schema.createIndex('follows_followee_id_idx').on('follows').column('followee_id').execute()
+      create: () =>
+        db.schema
+          .createIndex('follows_followee_id_idx')
+          .on('follows')
+          .column('followee_id')
+          .execute(),
     },
     {
       name: 'notifications_user_id_created_at_idx',
-      create: () => db.schema.createIndex('notifications_user_id_created_at_idx').on('notifications').columns(['user_id', 'created_at desc']).execute()
+      create: () =>
+        db.schema
+          .createIndex('notifications_user_id_created_at_idx')
+          .on('notifications')
+          .columns(['user_id', 'created_at desc'])
+          .execute(),
     },
     {
       name: 'notifications_read_idx',
-      create: () => db.schema.createIndex('notifications_read_idx').on('notifications').column('read').execute()
-    }
+      create: () =>
+        db.schema
+          .createIndex('notifications_read_idx')
+          .on('notifications')
+          .column('read')
+          .execute(),
+    },
   ];
 
   // Create all indexes safely
@@ -140,7 +204,6 @@ export async function down(db: Kysely<any>): Promise<void> {
     'follows_followee_id_idx',
     'notifications_user_id_created_at_idx',
     'notifications_read_idx',
-
   ];
 
   for (const indexName of indexes) {

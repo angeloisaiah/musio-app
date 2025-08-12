@@ -18,14 +18,17 @@ interface RateLimitStore {
 const store: RateLimitStore = {};
 
 // Clean up expired entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  Object.keys(store).forEach(key => {
-    if (store[key].resetTime < now) {
-      delete store[key];
-    }
-  });
-}, 5 * 60 * 1000);
+setInterval(
+  () => {
+    const now = Date.now();
+    Object.keys(store).forEach((key) => {
+      if (store[key].resetTime < now) {
+        delete store[key];
+      }
+    });
+  },
+  5 * 60 * 1000,
+);
 
 export function createRateLimit(options: RateLimitOptions) {
   const {
@@ -39,7 +42,7 @@ export function createRateLimit(options: RateLimitOptions) {
   return async function rateLimit(request: FastifyRequest, reply: FastifyReply) {
     const key = keyGenerator(request);
     const now = Date.now();
-    
+
     // Get or create entry
     if (!store[key] || store[key].resetTime < now) {
       store[key] = {
@@ -49,18 +52,18 @@ export function createRateLimit(options: RateLimitOptions) {
     }
 
     const entry = store[key];
-    
+
     // Check if limit exceeded
     if (entry.count >= max) {
       const retryAfter = Math.ceil((entry.resetTime - now) / 1000);
-      
+
       reply.status(429).headers({
         'X-RateLimit-Limit': max.toString(),
         'X-RateLimit-Remaining': '0',
         'X-RateLimit-Reset': new Date(entry.resetTime).toISOString(),
         'Retry-After': retryAfter.toString(),
       });
-      
+
       return reply.send({
         error: 'Too Many Requests',
         message: `Rate limit exceeded. Try again in ${retryAfter} seconds.`,

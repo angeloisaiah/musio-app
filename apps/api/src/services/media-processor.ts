@@ -45,7 +45,7 @@ export async function processMediaFile(job: MediaProcessingJob): Promise<MediaPr
     // 1. Download the file from job.originalUrl
     // 2. Process it with FFmpeg
     // 3. Upload to Cloudinary using cloudinaryService.uploadAudioWithWaveform()
-    
+
     // For now, create mock URLs that would come from Cloudinary
     const previewUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/audio/upload/musio/audio/${job.postId}/preview.mp3`;
     const waveformUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/video/upload/musio/waveforms/${job.postId}/waveform.mp4`;
