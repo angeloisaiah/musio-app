@@ -3,11 +3,6 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "functions": {
-    "app/**/*.tsx": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "env": {
     "NEXT_PUBLIC_API_URL": "https://musio-app-production.up.railway.app"
   },
