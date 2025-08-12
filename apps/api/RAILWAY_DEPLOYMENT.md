@@ -2,7 +2,7 @@
 
 ## 🚨 Current Issue
 
-Your Vercel frontend can't connect to the Railway backend API. This guide will fix the connection issue.
+Your Vercel frontend can't connect to the Railway backend API. The database connection works but the schema is missing.
 
 ## 🔧 Step-by-Step Fix
 
@@ -41,11 +41,21 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 YOUTUBE_API_KEY=your_youtube_api_key
 ```
 
-### 3. Deploy and Test
+### 3. Deploy and Run Migrations
 
 1. **Railway will auto-redeploy** when you add variables
 2. **Wait for deployment to complete**
-3. **Test the API endpoints:**
+3. **Check if migrations ran automatically** (they should run on startup)
+4. **If migrations didn't run, manually trigger them:**
+
+#### Manual Migration (if needed):
+
+1. **Go to your musio-app service in Railway**
+2. **Click on "Deployments" tab**
+3. **Click "New Deployment" → "Deploy from GitHub"**
+4. **This will run the startup command: `npm run migrate && npm run start`**
+
+### 4. Test the API Endpoints
 
 #### Test Basic API:
 
@@ -65,7 +75,7 @@ https://musio-app-production-fbf6.up.railway.app/health
 https://musio-app-production-fbf6.up.railway.app/test
 ```
 
-### 4. Verify Database Connection
+### 5. Verify Database Connection
 
 The health check should show:
 
@@ -80,7 +90,7 @@ The health check should show:
 
 If `"connected": false`, check your `DATABASE_URL` variable.
 
-### 5. Test Feed Endpoint
+### 6. Test Feed Endpoint
 
 Once database is connected:
 
@@ -89,6 +99,13 @@ https://musio-app-production-fbf6.up.railway.app/api/feed
 ```
 
 ## 🔍 Troubleshooting
+
+### Database Schema Missing:
+
+- ✅ **Run migrations manually** if they didn't run automatically
+- ✅ **Check Railway logs** for migration errors
+- ✅ **Verify DATABASE_URL** is correct
+- ✅ **Ensure PostgreSQL service** is running
 
 ### Database Connection Fails:
 
@@ -122,8 +139,9 @@ After following this guide:
 
 1. **Railway API responds** to health checks
 2. **Database connection** is established
-3. **Feed endpoint** returns data (or empty array if no posts)
-4. **Vercel frontend** loads without connection errors
+3. **Database schema** is created (posts, users, etc.)
+4. **Feed endpoint** returns data (or empty array if no posts)
+5. **Vercel frontend** loads without connection errors
 
 ## 🆘 Still Having Issues?
 
@@ -131,3 +149,14 @@ After following this guide:
 2. **Verify all environment variables** are set correctly
 3. **Test API endpoints directly** in browser
 4. **Check Railway service status** in dashboard
+5. **Manually trigger a new deployment** to run migrations
+
+## 🚨 IMPORTANT: Database Schema Issue
+
+If you see `"relation \"posts\" does not exist"`, this means:
+
+- ✅ Database connection works
+- ❌ Database tables haven't been created
+- 🔧 **Solution**: Run migrations manually or redeploy
+
+**Quick Fix**: Go to Railway dashboard → musio-app service → "Deployments" → "New Deployment" → "Deploy from GitHub"

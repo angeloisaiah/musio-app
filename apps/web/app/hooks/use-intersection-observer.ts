@@ -5,10 +5,10 @@ interface UseIntersectionObserverOptions extends IntersectionObserverInit {
 }
 
 export function useIntersectionObserver<T extends HTMLElement = HTMLDivElement>(
-  options: UseIntersectionObserverOptions = {}
+  options: UseIntersectionObserverOptions = {},
 ): [React.RefObject<T>, boolean] {
   const { threshold = 0, root = null, rootMargin = '0%', freezeOnceVisible = false } = options;
-  
+
   const elementRef = useRef<T>(null);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const frozen = useRef(false);
@@ -20,16 +20,16 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLDivElement>(
     const observer = new IntersectionObserver(
       ([entry]) => {
         const isElementIntersecting = entry.isIntersecting;
-        
+
         if (!frozen.current) {
           setIsIntersecting(isElementIntersecting);
-          
+
           if (freezeOnceVisible && isElementIntersecting) {
             frozen.current = true;
           }
         }
       },
-      { threshold, root, rootMargin }
+      { threshold, root, rootMargin },
     );
 
     observer.observe(element);

@@ -16,7 +16,7 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-// Mock Next.js image  
+// Mock Next.js image
 vi.mock('next/image', () => ({
   default: ({ src, alt, ...props }: any) => {
     const imgProps = { src, alt, ...props };
@@ -64,7 +64,7 @@ Object.defineProperty(window, 'sessionStorage', {
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -126,15 +126,17 @@ Element.prototype.scrollIntoView = vi.fn();
 Object.defineProperty(navigator, 'serviceWorker', {
   writable: true,
   value: {
-    register: vi.fn(() => Promise.resolve({
-      installing: null,
-      waiting: null,
-      active: {
-        postMessage: vi.fn(),
-      },
-      addEventListener: vi.fn(),
-      scope: '/',
-    })),
+    register: vi.fn(() =>
+      Promise.resolve({
+        installing: null,
+        waiting: null,
+        active: {
+          postMessage: vi.fn(),
+        },
+        addEventListener: vi.fn(),
+        scope: '/',
+      }),
+    ),
     ready: Promise.resolve({
       installing: null,
       waiting: null,
@@ -211,8 +213,8 @@ console.warn = (...args: any[]) => {
   if (
     typeof message === 'string' &&
     (message.includes('Warning: ReactDOM.render') ||
-     message.includes('Warning: Each child in a list') ||
-     message.includes('Warning: Failed prop type'))
+      message.includes('Warning: Each child in a list') ||
+      message.includes('Warning: Failed prop type'))
   ) {
     return;
   }

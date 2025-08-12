@@ -1,9 +1,14 @@
 import type { PostWithCounts, PaginatedResponse } from '../types/shared';
 import { APIError, NetworkError } from './error-handler';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://musio-app-production.up.railway.app';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'https://musio-app-production.up.railway.app';
 
-async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3): Promise<Response> {
+async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  retries = 3,
+): Promise<Response> {
   for (let i = 0; i < retries; i++) {
     try {
       const response = await fetch(url, {
@@ -24,22 +29,28 @@ async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 
       }
 
       if (i === retries - 1) {
-        throw new APIError(response.status, `Request failed after ${retries} retries: ${response.statusText}`);
+        throw new APIError(
+          response.status,
+          `Request failed after ${retries} retries: ${response.statusText}`,
+        );
       }
     } catch (error) {
       if (error instanceof APIError) {
         throw error;
       }
-      
+
       if (i === retries - 1) {
-        throw new NetworkError(`Network error after ${retries} retries`, error instanceof Error ? error : new Error(String(error)));
+        throw new NetworkError(
+          `Network error after ${retries} retries`,
+          error instanceof Error ? error : new Error(String(error)),
+        );
       }
-      
+
       // Wait before retry with exponential backoff
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+      await new Promise((resolve) => setTimeout(resolve, Math.pow(2, i) * 1000));
     }
   }
-  
+
   throw new NetworkError('Unexpected error in fetchWithRetry');
 }
 
@@ -58,7 +69,11 @@ export const apiClient = {
     return response.json();
   },
 
-  async getPosts(limit = 20, cursor?: string, filter?: string): Promise<PaginatedResponse<PostWithCounts>> {
+  async getPosts(
+    limit = 20,
+    cursor?: string,
+    filter?: string,
+  ): Promise<PaginatedResponse<PostWithCounts>> {
     const url = new URL(`${API_BASE_URL}/api/posts`);
     url.searchParams.set('limit', limit.toString());
     if (cursor) {
@@ -75,7 +90,12 @@ export const apiClient = {
     return response.json();
   },
 
-  async searchPosts(query?: string, tags?: string[], limit = 20, cursor?: string): Promise<PaginatedResponse<PostWithCounts>> {
+  async searchPosts(
+    query?: string,
+    tags?: string[],
+    limit = 20,
+    cursor?: string,
+  ): Promise<PaginatedResponse<PostWithCounts>> {
     const url = new URL(`${API_BASE_URL}/api/search`);
     url.searchParams.set('limit', limit.toString());
     if (query) {
